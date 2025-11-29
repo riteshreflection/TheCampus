@@ -1,0 +1,767 @@
+{
+  "createdAt": 1762001600779,
+  "createdBy": "5eNyiVGn2SeOyO4RrFBjk3HG8B52",
+  "description": "Rigid Body Dynamics, Coriolis force, Variable Mass System",
+  "duration": 90,
+  "explanationVideoUrl": "",
+  "isFree": false,
+  "level": "Intermediate",
+  "maxAttempts": 0,
+  "sections": [
+    {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0.67,
+      "id": "sec_1762001600779",
+      "questions": [
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1762001999650",
+          "imageFileName": "Mechanics MCQ Q16",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "x(t) = Asinωt, v(t) = Bcosωt",
+            "b": "x(t) = Asinωt, v(t) = Bsinωt",
+            "c": "x(t) = Acosωt, v(t) = Bsinωt",
+            "d": "x(t) = Acosωt, v(t) = Bcosωt"
+          },
+          "questionText": "A mass m, lying on a horizontal, frictionless surface, is connected to one end of a spring. The other end of the spring is connected to a wall, as shown in the figure. At t=0, the mass is given an impulse. The time dependence of the displacement and the velocity of the mass (in terms of nonzero constants A and B) are given by",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762432226056-explanation-Mechanics MCQ Q17 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762432226056",
+          "imageFileName": "Mechanics MCQ Q17",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "becomes aperiodic ",
+            "b": "remains periodic with the same period",
+            "c": "remains periodic with a higher period",
+            "d": "remains periodic with a lower period"
+          },
+          "questionText": "For small angular displacement (i.e., sinθ≈θ), a simple pendulum oscillates harmonically. For larger displacements, the motion",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762432452199-explanation-Mechanics MCQ Q18 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762432452199",
+          "imageFileName": "Mechanics MCQ Q18",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "nvA",
+            "b": "nvA/2",
+            "c": "nvA/4",
+            "d": "none of the above"
+          },
+          "questionText": "Consider a uniform distribution of particles with volume density n in a box. The particles have an isotropic velocity distribution with constant magnitude v. The rate at which the particles will be emitted from a hole of area A on one side of this box is",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762433719071-explanation-Mechanics MCQ Q19 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762433719071",
+          "imageFileName": "Mechanics MCQ Q19",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "r​=2rₚ​",
+            "b": "r​=rₚ​",
+            "c": "2r​=rₚ​",
+            "d": "r​=√2​ rₚ​"
+          },
+          "questionText": "If, in a Kepler potential, the pericentre distance of particle in a parabolic orbit is rₚ​, while the radius of the circular orbit with the same angular momentum is r​, then",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1762434166593",
+          "imageFileName": "Mechanics MCQ Q20 diagram.jpeg",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762434166593-question-Mechanics MCQ Q20 diagram.jpeg",
+          "questionText": "A two-dimensional vector A(t) is given by\n A(t)=îsin2t+ĵ​cos3t\n\nWhich of the following graphs best describes the locus of the tip of the vector, as t is varied from 0 to 2π?",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1762439342222",
+          "imageFileName": "Mechanics MCQ Q22",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "The speed of the raindrop increases linearly with time ",
+            "b": "The speed of the raindrop approaches exponentially with time",
+            "c": "The speed of the raindrop approaches a constant value when λt≫1",
+            "d": "The speed of the raindrop approaches a constant value when λt≪1"
+          },
+          "questionText": "A raindrop falls under gravity and captures water molecules from atmosphere. Its mass changes at the rate (dm/dt)​=λt, where λ is a positive constant and m(t) is the instantaneous mass. Assume that acceleration due to gravity is constant and water molecules are at rest with respect to earth before capture. Which of the following statements is correct?",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1762439579879",
+          "imageFileName": "Mechanics MCQ Q23",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "10",
+            "b": "12",
+            "c": "14",
+            "d": "16"
+          },
+          "questionText": "The mass per unit length of a rod (length 2 m) varies as ρ=3x kg/m. The moment of inertia (in kg m²) of the rod about a perpendicular axis passing through the tip of the rod at x=0",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762443011160-explanation-Mechanics MCQ Q24 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762443011160",
+          "imageFileName": "Mechanics MCQ Q24",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "5L/9",
+            "b": "4L/9",
+            "c": "L/9",
+            "d": "L/2"
+          },
+          "questionText": "A cylindrical rod of length L has a mass density distribution given by ρ(x) = P₀(1+ x/L) where x is measured from one end of the rod and P₀ is a constant of appropriate dimensions. The centre of mass of the rod is",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": "The Coriolis force is given by the formula FCOR​=−2m(ω×v). By the definition of the cross product, the resulting vector F​ must be perpendicular to both of the original vectors, ω and v. Correct answer is option (c)."
+          },
+          "id": "q_1762448655140",
+          "imageFileName": "Mechanics MCQ Q25",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "Along v",
+            "b": "Along v",
+            "c": "Perpendicular to both v and ω",
+            "d": "always directed towards the axis of rotation"
+          },
+          "questionText": "Consider an object moving with a velocity v in a frame which rotates with a constant angular velocity ω. The Coriolis force experienced by the object is",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762449574577-explanation-Mechanics MCQ Q27 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762449574577",
+          "imageFileName": "Mechanics MCQ Q27",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "0.0024 N",
+            "b": "0.0032 N",
+            "c": "0.004 N",
+            "d": "0.006 N"
+          },
+          "questionText": "An observer is located on a horizontal, circular turntable which rotates about a vertical axis with a uniform angular speed of 2 rad/sec. A mass of 10 grams is sliding without friction. At an instant when the mass is at a distance of 8 cm from the axis, it is observed to move towards the center with a speed of 6 cm/sec. The net force on the mass, as seen by the observer at that instant, is",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762449714584-explanation-Mechanics MCQ Q28 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762449714584",
+          "imageFileName": "Mechanics MCQ Q28",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "Both P and Q will move towards the east",
+            "b": "Both P and Q will move towards the west",
+            "c": "P will move towards the east and Q towards the west",
+            "d": "P will move towards the west and Q towards the east"
+          },
+          "questionText": "Two points N and S are located in the northern and southern hemisphere, respectively, on the same longitude. Projectiles P and Q are fired from N and S, respectively, towards each other. Which of the following options is correct for the projectiles as they approach the equator?",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762450008102-explanation-Mechanics MCQ Q29 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762450008102",
+          "imageFileName": "Mechanics MCQ Q29",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "2mωv towards his left",
+            "b": "2mωv towards his right",
+            "c": "2mωv towards his front",
+            "d": "2mωv towards his back"
+          },
+          "questionText": "A circular platform is rotating with a uniform angular speed ω counterclockwise... A person of mass m walks radially inward with a uniform speed v... find the magnitude and direction of the Coriolis force...",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762450636761_0-explanation-Mechanics MCQ Q21 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762450636761_0",
+          "imageFileName": "Mechanics MCQ Q21.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/q_1762450636761_0-Mechanics MCQ Q21.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762450640313_1-explanation-Mechanics MCQ Q26 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762450640313_1",
+          "imageFileName": "Mechanics MCQ Q26.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/q_1762450640313_1-Mechanics MCQ Q26.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762450789970-explanation-Mechanics MCQ Q30 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762450789970",
+          "imageFileName": "Mechanics MCQ Q30 diagram.jpeg",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "2ml²ω²sinθcosθ",
+            "b": "2ml²ω²sinθ",
+            "c": "2ml²ω²sin²θ",
+            "d": "2ml²ω²cos²θ"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762450789970-question-Mechanics MCQ Q30 diagram.jpeg",
+          "questionText": "A thin massless rod of length 2l has equal point masses m attached at its ends (see figure). The rod is rotating about an axis passing through its center and making angle θ with it. The magnitude of the rate of change of its angular momentum ∣dL/dt∣ is",
+          "questionType": "MCQ"
+        }
+      ],
+      "title": "Section A (MCQ)"
+    },
+    {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0,
+      "id": "sec_1762422350062",
+      "questions": [
+        {
+          "correctAnswers": [
+            "b",
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762441086392-explanation-Mechanics MSQ Q8 So.jpeg",
+            "text": ""
+          },
+          "id": "q_1762441086392",
+          "imageFileName": "Mechanics MSQ Q8 part.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "The mass of the rod is 2​λ₀L/3",
+            "b": "The centre of mass of the rod is located at x=9L/16",
+            "c": "The tension T₁​ in the left string is 7​mg/12",
+            "d": "The tension T₂​ in the right string is 3​mg/12"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762441086392-question-Mechanics MSQ Q8 part.jpeg",
+          "questionText": "The linear mass density of a rod of length L varies from one end to other as λ(x)=λ₀(1+ x/L​). The rod is suspended from a ceiling by two massless strings. Then, which of the following statement(s) is (are) correct?",
+          "questionType": "MSQ"
+        },
+        {
+          "correctAnswers": [
+            "a",
+            "b",
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762451899527-explanation-Mechanics MSQ Q9 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762451899527",
+          "imageFileName": "Mechanics MSQ Q9",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "dL/dt​ is perpendicular to L at all times.",
+            "b": "The component of L in the direction of A does not change with time",
+            "c": "The magnitude of L does not change with time.",
+            "d": "L does not change with time"
+          },
+          "questionText": "The torque (τ) acting on a rigid body about a point is described by τ=A×L. Here A is a constant vector and L is the angular momentum about the same point. This indicates that",
+          "questionType": "MSQ"
+        },
+        {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762453680770-explanation-Mechanics MSQ Q10Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762453680770",
+          "imageFileName": "Mechanics MSQ Q10.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762453680770-question-Mechanics MSQ Q10.jpeg",
+          "questionText": "Solve the Question.",
+          "questionType": "MSQ"
+        },
+        {
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762454158110-explanation-Mechanics NAT Q11 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762454158110",
+          "imageFileName": "Mechanics MSQ Q11",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "Gravitational self energy of a uniform solid sphere of mass M and radius R is U=−53​RGM2​",
+            "b": "For a twisted solid rod the angle of shear is zero on the axis of the rod",
+            "c": "For a twisted solid rod the angle of shear is independent of its radius",
+            "d": "Total energy (KE+PE) of a satellite in its orbit is always negative"
+          },
+          "questionText": "Choose the correct option(s)",
+          "questionType": "MSQ"
+        },
+        {
+          "correctAnswers": [
+            "a",
+            "d"
+          ],
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762454690743-explanation-Mechanics MSQ Q12 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762454690743",
+          "imageFileName": "Mechanics MSQ Q12",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "Deflect to the right in the Northern Hemisphere.",
+            "b": "Deflect to the left in the Northern Hemisphere.",
+            "c": "Deflect to the right in the Southern Hemisphere.",
+            "d": "Deflect to the left in the Southern Hemisphere."
+          },
+          "questionText": "On Earth, the Coriolis force causes moving air masses to:",
+          "questionType": "MSQ"
+        }
+      ],
+      "title": "Section B (MSQ)"
+    },
+    {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0,
+      "id": "sec_1762422363685",
+      "questions": [
+        {
+          "correctNumericalAnswerRange": {
+            "from": 15,
+            "to": 15
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762422382300-explanation-Mechanics NAT Q9 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762422382300",
+          "imageFileName": "Mechanics NAT Q9 diagram.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762422382300-question-Mechanics NAT Q9 diagram.jpeg",
+          "questionText": "A bullet of mass m​=0.1 kg travelling at a speed of v₁​=200 m/s hits one end of a stick of length L=1.0 m and mass M=0.5 kg lying on a horizontal table pivoted at the other end as shown in the figure. After hitting the stick the bullet continues to move along its original path but with a reduced speed of v₂=175 m/s. Assume there is no friction. Find angular speed of stick after it is hit in rad/sec.",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 1.33,
+            "to": 1.33
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762422826604-explanation-Mechanics NAT Q10 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762422826604",
+          "imageFileName": "Mechanics NAT Q10 diagram.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762422826604-question-Mechanics NAT Q10 diagram.jpeg",
+          "questionText": "A wheel of radius r=6 cm is mounted so as to rotate about a horizontal axis through its center. A string of negligible mass wrapped round its circumference carries a mass m=0.2 kg attached to its free end. When let fall, the mass descends through h=1 meter in t=5 seconds. Calculate the angular acceleration of the wheel.",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 0.5,
+            "to": 0.5
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762423129870-explanation-Mechanics NAT Q11 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762423129870",
+          "imageFileName": "Mechanics NAT Q11.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762423129870-question-Mechanics NAT Q11.jpeg",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762423465490-explanation-Mechanics NAT Q12 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762423465490",
+          "imageFileName": "Mechanics NAT Q12",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "A liquid is kept in a cylindrical vessel which is rotated along its axis. If the radius of the vessel is R=0.05 m and the speed of rotation is ν=2 rev. per sec, find the difference in the height of the liquid at the center of the vessel and at its sides.",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 5,
+            "to": 5
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1762424161288",
+          "imageFileName": "Mechanics NAT Q13",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "Water stands at a depth H= 10m in a tank, whose side walls are vertical. A hole is made on one of the walls at a depth h below the water surface. Find the value of h in meters, for which the place of water striking the floor is the farthest from the tank wall.",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 29025,
+            "to": 29025
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762428185444-explanation-Mechanics NAT Q14 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762428185444",
+          "imageFileName": "Mechanics NAT Q14 diagram.jpeg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762428185444-question-Mechanics NAT Q14 diagram.jpeg",
+          "questionText": "A non-viscous liquid of constant density ρ=1000 kg/m³ lows in a streamline motion along a tube of variable cross-section. The tube is kept inclined as shown in the figure. The area of cross-section at point 'P' is Aₚ​=4×10⁻³ m² and at point 'Q' is Aq=8×10⁻³ m². The velocity of liquid at point 'P' is vₚ​=1 m/s. The heights of P and Q are hₚ​=2 m and hq​=5 m, respectively. Find the work done per unit volume (in Joules)  by the pressure and the gravity forces as the fluid flows from point P to Q.",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 10,
+            "to": 10
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762439937967-explanation-Mechanics NAT Q15 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762439937967",
+          "imageFileName": "Mechanics NAT Q15",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "A syringe is used to exert 1.5 atmospheric pressure to release water horizontally. The speed of water immediately after ejection is _______. (take 1 atmospheric pressure = 10⁵ Pascal, density of water = 10³ kg m⁻³) (Specify your answer in m s⁻¹ as an integer)",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 2.4,
+            "to": 2.42
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762440652517-explanation-Mechanics NAT Q16 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762440652517",
+          "imageFileName": "Mechanics NAT Q16",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "At t=0, a particle of mass m having velocity v₀ starts moving through a liquid kept in a horizontal tube and experiences a drag force Fd​=−k(dx/dt)​. It covers a distance L before coming to rest. If the times taken to cover the distances L/2 and L/4 are t₂ and t₁ respectively, then the ratio t₂​/t₁​ (ignoring gravity) is _______. (Specify your answer to two digits after the decimal point)",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 1,
+            "to": 1
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762440932167-explanation-Mechanics NAT Q17 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762440932167",
+          "imageFileName": "Mechanics NAT Q17",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "Sand falls on a conveyor belt moving with a constant speed of v=1.0 m/s. If the sand is added at a rate dm/dt=1.0 kg/s, the power needed to keep the conveyor belt running is _______. (Specify your answer in Watts to two digits after the decimal point)",
+          "questionType": "ShortAnswer"
+        },
+        {
+          "correctNumericalAnswerRange": {
+            "from": 2,
+            "to": 2
+          },
+          "explanation": {
+            "imageUrl": "https://tests.thecampus.in/tests/-OczTg10--9Hn8g0pin_/questions/q_1762448879881-explanation-Mechanics NAT Q18 Sol.jpeg",
+            "text": ""
+          },
+          "id": "q_1762448879881",
+          "imageFileName": "Mechanics NAT Q18",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionText": "A particle of mass m is moving in a circular orbit given by r=Rcosωtî + Rsinωtĵ​ as observed in an inertial frame S₁. Another inertial frame S₂​ moves with uniform velocity v=ωRî with respect to S₁. S₁​ and S₂​ are related by Galilean transformation, such that the origins coincide at t=0. The magnitude of the angular momentum of the particle at t=π​/2ω as observed in S₂​ about its origin is expressed as (mR²ω)x. Then x is _______. (Specify your answer upto two digits after the decimal point)\n",
+          "questionType": "ShortAnswer"
+        }
+      ],
+      "title": "Section C (NAT)"
+    }
+  ],
+  "status": "published",
+  "subject": "Physics",
+  "title": "Classical Mechanics IIT JAM Test 2",
+  "totalMarks": 60,
+  "totalQuestions": 30
+}

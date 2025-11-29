@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Payment Worker Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+        #response {
+            margin-top: 1.5rem;
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.8rem;
+            border: 1px solid #ddd;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Create Payment Worker Test</h1>
+    <p>Use this tool to test the secure payment order creation worker.</p>
+    <form id="testForm">
+        <label for="courseId">Course ID:</label>
+        <input type="text" id="courseId" name="courseId" value="courseId1" required>
+
+        <label for="couponCode">Coupon Code (Optional):</label>
+        <input type="text" id="couponCode" name="couponCode" placeholder="e.g., WELCOME20">
+        
+        <label for="customerId">Customer ID (User UID):</label>
+        <input type="text" id="customerId" name="customerId" value="user_abc_123" required>
+
+        <label for="customerPhone">Customer Phone:</label>
+        <input type="text" id="customerPhone" name="customerPhone" value="9876543210" required>
+        
+        <button type="submit" id="submitBtn">Create Payment Order</button>
+    </form>
+    <pre id="response"></pre>
+</div>
+
+<script>
+    const form = document.getElementById('testForm');
+    const responseEl = document.getElementById('response');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const payload = {
+            courseId: document.getElementById('courseId').value,
+            couponCode: document.getElementById('couponCode').value,
+            order_id: 'order_' + Date.now(), // Generate a unique orderId for each test
+            customer_id: document.getElementById('customerId').value,
+            customer_phone: document.getElementById('customerPhone').value,
+        };
+
+        responseEl.textContent = 'Sending request to worker...';
+        responseEl.className = '';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('https://create-payment.essyritesh.workers.dev/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            
+            responseEl.textContent = `Status: ${response.status}\n\n${JSON.stringify(result, null, 2)}`;
+            
+            if (response.ok) {
+                responseEl.classList.add('success');
+            } else {
+                responseEl.classList.add('error');
+            }
+
+        } catch (error) {
+            responseEl.textContent = `Network Error: ${error.message}`;
+            responseEl.classList.add('error');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,901 @@
+{
+  "createdAt": 1760530596295,
+  "createdBy": "5eNyiVGn2SeOyO4RrFBjk3HG8B52",
+  "description": "All Topics in Mathematical Physics",
+  "duration": 105,
+  "explanationPdfUrl": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/explanation-MP Full Length Test Solution.pdf",
+  "explanationVideoUrl": "",
+  "isFree": false,
+  "level": "Intermediate",
+  "maxAttempts": 0,
+  "sections": {
+    "sec_1760530596295": {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0.67,
+      "id": "sec_1760530596295",
+      "questions": {
+        "q_1760531204647_0": {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531204647_0",
+          "imageFileName": "Functions MCQ Q1.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531204647_0-Functions MCQ Q1.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531207044_1": {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531207044_1",
+          "imageFileName": "Fourier series MCQ Q6.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531207044_1-Fourier series MCQ Q6.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531209122_2": {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531209122_2",
+          "imageFileName": "Matrix MCQ Q11.png",
+          "marks": 1,
+          "negativeMarks": 0.33,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531209122_2-Matrix MCQ Q11.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531211654_3": {
+          "correctAnswers": [
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531211654_3",
+          "imageFileName": "Screenshot 2025-10-18 231513.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/questions/q_1760531211654_3-Screenshot 2025-10-18 231513.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531213544_4": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531213544_4",
+          "imageFileName": "Matrix MCQ Q9.png",
+          "marks": 1,
+          "negativeMarks": 0.33,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531213544_4-Matrix MCQ Q9.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531215367_5": {
+          "correctAnswers": [
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531215367_5",
+          "imageFileName": "Matrix MCQ Q8.png",
+          "marks": 1,
+          "negativeMarks": 0.33,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531215367_5-Matrix MCQ Q8.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531217616_6": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531217616_6",
+          "imageFileName": "Diff MCQ Q20.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/questions/q_1760531217616_6-Diff MCQ Q20.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531220138_7": {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531220138_7",
+          "imageFileName": "TAYLER MCQ Q5.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531220138_7-TAYLER MCQ Q5.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531223042_8": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531223042_8",
+          "imageFileName": "Fourier series MCQ Q5.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531223042_8-Fourier series MCQ Q5.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531225313_9": {
+          "correctAnswers": [
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531225313_9",
+          "imageFileName": "COMPLEX MCQ Q8.png",
+          "marks": 1,
+          "negativeMarks": 0.33,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531225313_9-COMPLEX MCQ Q8.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531227672_10": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531227672_10",
+          "imageFileName": "Diff MCQ  Q21.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531227672_10-Diff MCQ  Q21.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531229958_11": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531229958_11",
+          "imageFileName": "TAYLER SERIES MCQ Q4.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531229958_11-TAYLER SERIES MCQ Q4.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531231828_12": {
+          "correctAnswers": [
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531231828_12",
+          "imageFileName": "Diff MCQ Q19.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531231828_12-Diff MCQ Q19.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531234615_13": {
+          "correctAnswers": [
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531234615_13",
+          "imageFileName": "TAYLER SERIES MCQ Q3.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531234615_13-TAYLER SERIES MCQ Q3.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531237352_14": {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531237352_14",
+          "imageFileName": "Vector Calculus MCQ Q8.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531237352_14-Vector Calculus MCQ Q8.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531240008_15": {
+          "correctAnswers": [
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531240008_15",
+          "imageFileName": "Diff MCQ Q18.png",
+          "marks": 1,
+          "negativeMarks": 0.33,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531240008_15-Diff MCQ Q18.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        },
+        "q_1760531242126_16": {
+          "correctAnswers": [
+            "b"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760531242126_16",
+          "imageFileName": "Diff MCQ Q17.png",
+          "marks": 2,
+          "negativeMarks": 0.67,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760531242126_16-Diff MCQ Q17.png",
+          "questionText": "Solve the Question",
+          "questionType": "MCQ"
+        }
+      },
+      "title": "Section A (MCQ)"
+    },
+    "sec_1760531689439": {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0,
+      "id": "sec_1760531689439",
+      "questions": {
+        "q_1760533236710_0": {
+          "correctAnswers": [
+            "a",
+            "b",
+            "d",
+            "c"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533236710_0",
+          "imageFileName": "Vector Calculus MSQ Q5.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533236710_0-Vector Calculus MSQ Q5.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533239880_1": {
+          "correctAnswers": [
+            "c",
+            "b",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533239880_1",
+          "imageFileName": "Diff MSQ Q3.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533239880_1-Diff MSQ Q3.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533240947_2": {
+          "correctAnswers": [
+            "a",
+            "c",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533240947_2",
+          "imageFileName": "Vector Calculus MSQ Q4.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533240947_2-Vector Calculus MSQ Q4.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533241918_3": {
+          "correctAnswers": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533241918_3",
+          "imageFileName": "Complex MSQ Q1.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533241918_3-Complex MSQ Q1.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533242946_4": {
+          "correctAnswers": [
+            "b",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533242946_4",
+          "imageFileName": "Matrix MSQ Q4.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533242946_4-Matrix MSQ Q4.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533243981_5": {
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533243981_5",
+          "imageFileName": "Fouries series MSQ Q1.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533243981_5-Fouries series MSQ Q1.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533245344_6": {
+          "correctAnswers": [
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533245344_6",
+          "imageFileName": "Vector Calculus MSQ Q6.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/questions/q_1760533245344_6-Vector Calculus MSQ Q6.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        },
+        "q_1760533247011_7": {
+          "correctAnswers": [
+            "c",
+            "a"
+          ],
+          "correctNumericalAnswerRange": {
+            "from": 0,
+            "to": 0
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760533247011_7",
+          "imageFileName": "Vector Calculus MSQ Q3.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "A",
+            "b": "B",
+            "c": "C",
+            "d": "D"
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760533247011_7-Vector Calculus MSQ Q3.png",
+          "questionText": "Solve the Question",
+          "questionType": "MSQ"
+        }
+      },
+      "title": "Section B (MSQ)"
+    },
+    "sec_1760543465986": {
+      "defaultMarks": 2,
+      "defaultNegativeMarks": 0,
+      "id": "sec_1760543465986",
+      "questions": {
+        "q_1760543888274_0": {
+          "correctNumericalAnswerRange": {
+            "from": 5,
+            "to": 5
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543888274_0",
+          "imageFileName": "Screenshot 2025-10-19 200024.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/questions/q_1760543888274_0-Screenshot 2025-10-19 200024.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543890289_1": {
+          "correctNumericalAnswerRange": {
+            "from": 1.5,
+            "to": 1.5
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543890289_1",
+          "imageFileName": "Vector Calculus NAT Q5.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543890289_1-Vector Calculus NAT Q5.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543891953_2": {
+          "correctNumericalAnswerRange": {
+            "from": 100.2,
+            "to": 100.8
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543891953_2",
+          "imageFileName": "Vector Calculus NAT Q6.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543891953_2-Vector Calculus NAT Q6.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543892999_3": {
+          "correctNumericalAnswerRange": {
+            "from": 1,
+            "to": 1
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543892999_3",
+          "imageFileName": "Complex NAT Q2.jpg",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543892999_3-Complex NAT Q2.jpg",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543894270_4": {
+          "correctNumericalAnswerRange": {
+            "from": 1,
+            "to": 1
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543894270_4",
+          "imageFileName": "Jacobian NAT Q2.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543894270_4-Jacobian NAT Q2.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543895505_5": {
+          "correctNumericalAnswerRange": {
+            "from": -22,
+            "to": -22
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543895505_5",
+          "imageFileName": "Matrix NAT Q2.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543895505_5-Matrix NAT Q2.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543896653_6": {
+          "correctNumericalAnswerRange": {
+            "from": 1,
+            "to": 1
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543896653_6",
+          "imageFileName": "Diff NAT Q5.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543896653_6-Diff NAT Q5.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543898014_7": {
+          "correctNumericalAnswerRange": {
+            "from": 0.7,
+            "to": 0.8
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543898014_7",
+          "imageFileName": "PROBABLITY NAT Q1.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543898014_7-PROBABLITY NAT Q1.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543899164_8": {
+          "correctNumericalAnswerRange": {
+            "from": 6,
+            "to": 6
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543899164_8",
+          "imageFileName": "DIFF NAT Q4.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543899164_8-DIFF NAT Q4.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        },
+        "q_1760543900148_9": {
+          "correctNumericalAnswerRange": {
+            "from": 12,
+            "to": 12
+          },
+          "explanation": {
+            "text": ""
+          },
+          "id": "q_1760543900148_9",
+          "imageFileName": "JACOBIAN NAT Q1.png",
+          "marks": 2,
+          "negativeMarks": 0,
+          "options": {
+            "a": "",
+            "b": "",
+            "c": "",
+            "d": ""
+          },
+          "questionImage": "https://tests.thecampus.in/tests/-ObbnEwD23wLa7QRZLdw/q_1760543900148_9-JACOBIAN NAT Q1.png",
+          "questionText": "Solve the Question",
+          "questionType": "ShortAnswer"
+        }
+      },
+      "title": "Section C (NAT)"
+    }
+  },
+  "status": "published",
+  "subject": "Physics",
+  "title": "Mathematical Physics - Full Unit Test",
+  "totalMarks": 65,
+  "totalQuestions": 35
+}

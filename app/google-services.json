@@ -1,0 +1,114 @@
+{
+  "project_info": {
+    "project_number": "338221573065",
+    "firebase_url": "https://the-campus-in-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "the-campus-in",
+    "storage_bucket": "the-campus-in.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338221573065:android:0133aab8b682cad9c9be18",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1idhc4e8oeG5r8justKOHxjCQUeYGLc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338221573065:android:bb7e11b0654f0e44c9be18",
+        "android_client_info": {
+          "package_name": "com.reflection.thecampus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338221573065-2bedr57a7v1iu3osbbb0nonmo12essnh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.reflection.thecampus",
+            "certificate_hash": "501eba0afda562e207437bac4f0e0c9c7e131bc9"
+          }
+        },
+        {
+          "client_id": "338221573065-lif8banebbntfgi65lljss0agjb5fa9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.reflection.thecampus",
+            "certificate_hash": "1c6850d7931b86b996c22b8b2e829e3222472b36"
+          }
+        },
+        {
+          "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1idhc4e8oeG5r8justKOHxjCQUeYGLc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338221573065:android:0fe2c378b5fa4506c9be18",
+        "android_client_info": {
+          "package_name": "com.relection.thecampus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1idhc4e8oeG5r8justKOHxjCQUeYGLc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338221573065-jebmmj7mf8o3m2iebl2rpi7v68k38qa0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

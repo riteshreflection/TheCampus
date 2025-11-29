@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">The Campus</string>
+    <string name="login_title">Login</string>
+    <string name="signup_title">Sign Up</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="name_hint">Full Name</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="no_account_prompt">Don\'t have an account? Sign Up</string>
+    <string name="already_have_account_prompt">Already have an account? Login</string>
+</resources>

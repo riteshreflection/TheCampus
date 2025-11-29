@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Shimmer Thumbnail -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="#E0E0E0"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Shimmer Tag -->
+            <View
+                android:layout_width="80dp"
+                android:layout_height="20dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Shimmer Title -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Shimmer Description Line 1 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="14dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Shimmer Description Line 2 -->
+            <View
+                android:layout_width="200dp"
+                android:layout_height="14dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Shimmer Price -->
+            <View
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Shimmer Button -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#E0E0E0"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

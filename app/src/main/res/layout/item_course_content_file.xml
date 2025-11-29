@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <!-- Tree Line (Visible only if not root) -->
+    <ImageView
+        android:id="@+id/ivTreeLines"
+        android:layout_width="24dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_tree_branch"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        android:layout_marginEnd="-4dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="3dp"
+        app:cardBackgroundColor="?attr/colorSurface">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <!-- Document Icon -->
+            <ImageView
+                android:id="@+id/ivFileIcon"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_book"
+                android:contentDescription="File"
+                app:tint="?attr/colorOnSurface"
+                android:alpha="0.7"
+                android:layout_marginStart="42dp"
+                android:layout_marginEnd="14dp"/>
+
+            <!-- File Name -->
+            <TextView
+                android:id="@+id/tvFileName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="File Name"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface"
+                android:lineSpacingExtra="2dp"/>
+
+            <!-- Lock Icon (visible if locked) -->
+            <ImageView
+                android:id="@+id/ivLock"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_lock_closed"
+                android:contentDescription="Locked"
+                app:tint="?attr/colorOnSurface"
+                android:alpha="0.6"
+                android:visibility="gone"
+                android:layout_marginStart="8dp"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

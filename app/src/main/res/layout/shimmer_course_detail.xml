@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?android:attr/colorBackground">
+
+    <!-- Shimmer Header Image -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#E0E0E0" />
+
+    <!-- Shimmer Pricing Card -->
+    <androidx.cardview.widget.CardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_dashed_border">
+
+            <!-- Title Placeholder -->
+            <View
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <!-- Price Placeholder -->
+                <View
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginEnd="12dp"/>
+
+                <!-- Original Price Placeholder -->
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="20dp"
+                    android:background="#E0E0E0"/>
+            </LinearLayout>
+
+            <!-- Button Placeholder -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="#E0E0E0"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Tab Strip Placeholder -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical">
+        
+        <View
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:layout_weight="1"
+            android:background="#E0E0E0"
+            android:layout_marginEnd="16dp"/>
+        
+        <View
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:layout_weight="1"
+            android:background="#E0E0E0"
+            android:layout_marginEnd="16dp"/>
+            
+        <View
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:layout_weight="1"
+            android:background="#E0E0E0"/>
+    </LinearLayout>
+
+    <!-- Content Placeholder -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <View
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="4dp"/>
+            
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="4dp"/>
+            
+        <View
+            android:layout_width="200dp"
+            android:layout_height="16dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="24dp"/>
+            
+        <!-- Another section -->
+        <View
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="#E0E0E0"/>
+
+    </LinearLayout>
+
+</LinearLayout>

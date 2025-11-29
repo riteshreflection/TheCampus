@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_my_courses"
+        android:icon="@drawable/book_open_svgrepo_com"
+        android:title="My Courses"/>
+    <item
+        android:id="@+id/nav_discover"
+        android:icon="@drawable/book_bookmark_svgrepo_com"
+        android:title="Discover"/>
+    <item
+        android:id="@+id/nav_notifications"
+        android:icon="@drawable/notification_bell_new_svgrepo_com"
+        android:title="Notifications"/>
+</menu>

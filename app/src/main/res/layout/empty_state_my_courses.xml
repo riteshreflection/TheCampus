@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/emptyAnimation"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:lottie_rawRes="@raw/placeholder_book"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Courses Yet"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnBackground"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start learning by enrolling in your first course"
+        android:textSize="14sp"
+        android:textColor="?attr/colorOnBackground"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="32dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBrowseCourses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Browse Courses"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="12dp"
+        android:paddingHorizontal="32dp"/>
+
+</LinearLayout>
