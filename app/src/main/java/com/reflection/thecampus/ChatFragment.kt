@@ -94,8 +94,10 @@ class ChatFragment : Fragment() {
         etMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                btnSend.isEnabled = !s.isNullOrBlank()
-                btnSend.alpha = if (s.isNullOrBlank()) 0.5f else 1.0f
+                val hasText = !s.isNullOrBlank()
+                val hasCourse = currentCourseId != null
+                btnSend.isEnabled = hasText && hasCourse
+                btnSend.alpha = if (hasText && hasCourse) 1.0f else 0.5f
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -104,6 +106,11 @@ class ChatFragment : Fragment() {
         btnSend.alpha = 0.5f
 
         btnSend.setOnClickListener {
+            if (currentCourseId == null) {
+                Toast.makeText(context, "Please select a course first", Toast.LENGTH_SHORT).show()
+                Timber.e("Attempted to send message without courseId")
+                return@setOnClickListener
+            }
             sendMessage()
         }
     }
@@ -241,7 +248,10 @@ class ChatFragment : Fragment() {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(Course::class.java)?.let { course ->
-                            courses.add(course)
+                            // CRITICAL FIX: Set the course ID from the Firebase key
+                            val courseWithId = course.copy(id = courseId)
+                            courses.add(courseWithId)
+                            Timber.d("Loaded course: ${course.basicInfo.name} with ID: $courseId")
                         }
                         
                         loadedCount++
@@ -271,6 +281,7 @@ class ChatFragment : Fragment() {
         spinnerCourses.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val newCourseId = courses[position].id
+                Timber.d("Spinner selected: position=$position, courseId=$newCourseId, courseName=${courses[position].basicInfo.name}")
                 
                 // Only reload if course actually changed
                 if (currentCourseId != newCourseId) {
@@ -345,6 +356,7 @@ class ChatFragment : Fragment() {
         
         if (text.isEmpty()) return
 
+        // FIXED: Include courseId in the path
         val messageRef = database.getReference("courseChats/$courseId/messages").push()
         val messageId = messageRef.key ?: return
 
@@ -360,7 +372,7 @@ class ChatFragment : Fragment() {
                         timestamp = System.currentTimeMillis(),
                         senderId = userId,
                         senderName = userName,
-                        courseId = courseId,
+                        courseId = courseId, // FIXED: Ensure courseId is included
                         replyToId = replyToMessage?.id,
                         replyToText = replyToMessage?.text,
                         replyToSender = replyToMessage?.senderName
@@ -370,9 +382,11 @@ class ChatFragment : Fragment() {
                         .addOnSuccessListener {
                             etMessage.setText("")
                             clearReply()
+                            Timber.d("Message sent to courseChats/$courseId/messages/$messageId")
                         }
                         .addOnFailureListener {
                             Toast.makeText(context, "Failed to send message", Toast.LENGTH_SHORT).show()
+                            Timber.e("Failed to send message: ${it.message}")
                         }
                 }
 
