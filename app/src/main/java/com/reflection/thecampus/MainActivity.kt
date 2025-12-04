@@ -2,6 +2,7 @@ package com.reflection.thecampus
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -65,17 +66,17 @@ class MainActivity : AppCompatActivity() {
         tabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             // Set tab icons
             tab.icon = when (position) {
-                0 -> getDrawable(R.drawable.book_open_svgrepo_com)
-                1 -> getDrawable(R.drawable.book_bookmark_svgrepo_com)
-                2 -> getDrawable(R.drawable.ic_chat_bubble) // Chat icon
-                3 -> getDrawable(R.drawable.notification_bell_new_svgrepo_com)
+                0 -> AppCompatResources.getDrawable(this,R.drawable.book_open_svgrepo_com)
+                1 -> AppCompatResources.getDrawable(this,R.drawable.book_bookmark_svgrepo_com)
+                2 -> AppCompatResources.getDrawable(this,R.drawable.ic_chat_bubble) // Chat icon
+                3 -> AppCompatResources.getDrawable(this,R.drawable.notification_bell_new_svgrepo_com)
                 else -> null
             }
             // Add Beta badge to Chat tab
             if (position == 2) {
                 tab.orCreateBadge.apply {
                     text = "Beta"
-                    backgroundColor = getColor(R.color.colorWarning)
+                    backgroundColor = getColor(R.color.colorSaffron)
                 }
             }
         }

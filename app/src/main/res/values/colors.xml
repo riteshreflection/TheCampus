@@ -12,6 +12,7 @@
     <color name="colorSuccess">#4CAF50</color>
     <color name="colorError">#B00020</color>
     <color name="colorWarning">#FFC107</color>
+    <color name="colorSaffron">#F46F36</color>
     <color name="colorInfo">#2196F3</color>
     <color name="colorTextPrimary">#212121</color>
     <color name="colorTextSecondary">#757575</color>

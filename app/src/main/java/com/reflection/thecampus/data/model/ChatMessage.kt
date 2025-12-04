@@ -1,5 +1,8 @@
 package com.reflection.thecampus.data.model
 
+import androidx.annotation.Keep
+
+@Keep
 data class ChatMessage(
     val text: String = "",
     val timestamp: Long = 0,
