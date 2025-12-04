@@ -58,6 +58,8 @@ class MainActivity : AppCompatActivity() {
         // Set up ViewPager2 with adapter
         val adapter = MainFragmentAdapter(this)
         viewPager.adapter = adapter
+        viewPager.isUserInputEnabled = false // Disable swipe navigation
+        viewPager.offscreenPageLimit = 3 // Keep all 4 fragments in memory
         
         // Connect TabLayout with ViewPager2
         tabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -65,8 +67,16 @@ class MainActivity : AppCompatActivity() {
             tab.icon = when (position) {
                 0 -> getDrawable(R.drawable.book_open_svgrepo_com)
                 1 -> getDrawable(R.drawable.book_bookmark_svgrepo_com)
-                2 -> getDrawable(R.drawable.notification_bell_new_svgrepo_com)
+                2 -> getDrawable(R.drawable.ic_chat_bubble) // Chat icon
+                3 -> getDrawable(R.drawable.notification_bell_new_svgrepo_com)
                 else -> null
+            }
+            // Add Beta badge to Chat tab
+            if (position == 2) {
+                tab.orCreateBadge.apply {
+                    text = "Beta"
+                    backgroundColor = getColor(R.color.colorWarning)
+                }
             }
         }
         tabLayoutMediator.attach()
@@ -166,7 +176,7 @@ class MainActivity : AppCompatActivity() {
     
     // Public method to navigate to specific tab
     fun navigateToTab(tabIndex: Int) {
-        if (tabIndex in 0..2) {
+        if (tabIndex in 0..3) {
             viewPager.setCurrentItem(tabIndex, true)
         }
     }

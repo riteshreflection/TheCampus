@@ -6,13 +6,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class MainFragmentAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
     
-    override fun getItemCount(): Int = 3
+    override fun getItemCount(): Int = 4
     
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> MyCoursesFragment()
             1 -> DiscoverFragment()
-            2 -> NotificationsFragment()
+            2 -> ChatFragment()
+            3 -> NotificationsFragment()
             else -> MyCoursesFragment()
         }
     }
