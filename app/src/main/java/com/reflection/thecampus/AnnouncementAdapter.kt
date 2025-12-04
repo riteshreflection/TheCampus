@@ -13,8 +13,13 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AnnouncementAdapter(
-    private val announcements: List<AnnouncementItem>
+    private var announcements: List<AnnouncementItem>
 ) : RecyclerView.Adapter<AnnouncementViewHolder>() {
+    
+    fun updateAnnouncements(newAnnouncements: List<AnnouncementItem>) {
+        announcements = newAnnouncements
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnnouncementViewHolder {
         val view = LayoutInflater.from(parent.context)

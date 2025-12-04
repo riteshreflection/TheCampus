@@ -32,7 +32,6 @@ class DiscoverFragment : Fragment() {
         rvFeaturedCourses.isNestedScrollingEnabled = false
 
         val shimmer = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerDiscover)
-        shimmer.startShimmer()
 
         // Setup swipe-to-refresh
         swipeRefresh.setOnRefreshListener {
@@ -78,19 +77,37 @@ class DiscoverFragment : Fragment() {
 
         return view
     }
+    
+    override fun onResume() {
+        super.onResume()
+        // Start shimmer only when visible
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerDiscover)?.startShimmer()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        // Stop shimmer when not visible
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerDiscover)?.stopShimmer()
+    }
 
     private fun updateAdapter(recyclerView: RecyclerView) {
         timber.log.Timber.d("updateAdapter called - courses: ${currentCourses.size}, enrolled IDs: ${enrolledCourseIds.size}")
 
         if (currentCourses.isNotEmpty()) {
-            adapter = CourseAdapter(currentCourses, enrolledCourseIds) { course ->
-                timber.log.Timber.d("Course clicked: ${course.id} - ${course.basicInfo.name}")
-                val intent = Intent(activity, CourseDetailActivity::class.java)
-                intent.putExtra("COURSE_ID", course.id)
-                startActivity(intent)
+            // Only create adapter if it doesn't exist, otherwise update
+            if (!::adapter.isInitialized) {
+                adapter = CourseAdapter(currentCourses, enrolledCourseIds) { course ->
+                    timber.log.Timber.d("Course clicked: ${course.id} - ${course.basicInfo.name}")
+                    val intent = Intent(activity, CourseDetailActivity::class.java)
+                    intent.putExtra("COURSE_ID", course.id)
+                    startActivity(intent)
+                }
+                recyclerView.adapter = adapter
+                timber.log.Timber.d("✓ Adapter created with ${currentCourses.size} courses")
+            } else {
+                adapter.updateCourses(currentCourses, enrolledCourseIds)
+                timber.log.Timber.d("✓ Adapter updated with ${currentCourses.size} courses")
             }
-            recyclerView.adapter = adapter
-            timber.log.Timber.d("✓ Adapter updated successfully")
         } else {
             timber.log.Timber.w("⚠ Cannot update adapter - no courses available")
         }

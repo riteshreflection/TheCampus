@@ -2,17 +2,23 @@ package com.reflection.thecampus
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
+    private lateinit var tabLayoutMediator: TabLayoutMediator
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply dynamic theme BEFORE super.onCreate to ensure it takes effect for all attributes
+        com.reflection.thecampus.utils.ThemeHelper.applyTheme(this)
         super.onCreate(savedInstanceState)
+        
         setContentView(R.layout.activity_main)
         
         // Set status bar color to match surface
@@ -28,12 +34,52 @@ class MainActivity : AppCompatActivity() {
         // Initialize shared ViewModel
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        // Initialize ViewPager2 and TabLayout
+        viewPager = findViewById(R.id.view_pager)
         tabLayout = findViewById(R.id.tab_layout)
         
-        // Add tabs with icons only
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.book_open_svgrepo_com))
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.book_bookmark_svgrepo_com))
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.notification_bell_new_svgrepo_com))
+        // Apply dynamic theme color to tab indicator
+        val primaryColor = com.reflection.thecampus.utils.DynamicThemeUtils.getPrimaryColor(this)
+        tabLayout.setSelectedTabIndicatorColor(primaryColor)
+        
+        // Create ColorStateList for tab icons
+        val iconColorStateList = android.content.res.ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_selected),
+                intArrayOf()
+            ),
+            intArrayOf(
+                primaryColor,
+                getColor(R.color.colorTextSecondary)
+            )
+        )
+        tabLayout.tabIconTint = iconColorStateList
+        
+        // Set up ViewPager2 with adapter
+        val adapter = MainFragmentAdapter(this)
+        viewPager.adapter = adapter
+        
+        // Connect TabLayout with ViewPager2
+        tabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            // Set tab icons
+            tab.icon = when (position) {
+                0 -> getDrawable(R.drawable.book_open_svgrepo_com)
+                1 -> getDrawable(R.drawable.book_bookmark_svgrepo_com)
+                2 -> getDrawable(R.drawable.notification_bell_new_svgrepo_com)
+                else -> null
+            }
+        }
+        tabLayoutMediator.attach()
+        
+        // Add haptic feedback on tab selection
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tabLayout.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
         
         // Check Auth Status
         val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
@@ -41,38 +87,6 @@ class MainActivity : AppCompatActivity() {
             val loginPrompt = LoginPromptBottomSheet()
             loginPrompt.show(supportFragmentManager, LoginPromptBottomSheet.TAG)
         }
-
-        // Set initial fragment
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, MyCoursesFragment())
-                .commit()
-        }
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                // Soft haptic feedback
-                tabLayout.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
-                
-                val fragment = when (tab?.position) {
-                    0 -> MyCoursesFragment()
-                    1 -> DiscoverFragment()
-                    2 -> NotificationsFragment()
-                    else -> MyCoursesFragment()
-                }
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit()
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Not needed
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Not needed
-            }
-        })
 
         // Handle Back Press
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
@@ -153,7 +167,13 @@ class MainActivity : AppCompatActivity() {
     // Public method to navigate to specific tab
     fun navigateToTab(tabIndex: Int) {
         if (tabIndex in 0..2) {
-            tabLayout.getTabAt(tabIndex)?.select()
+            viewPager.setCurrentItem(tabIndex, true)
         }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        // Detach TabLayoutMediator to prevent memory leaks
+        tabLayoutMediator.detach()
     }
 }

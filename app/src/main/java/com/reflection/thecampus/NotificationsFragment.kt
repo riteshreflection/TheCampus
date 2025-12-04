@@ -28,7 +28,6 @@ class NotificationsFragment : Fragment() {
         val layoutEmpty = view.findViewById<View>(R.id.layoutEmpty)
 
         rvAnnouncements.layoutManager = LinearLayoutManager(context)
-        shimmer.startShimmer()
 
         // Setup swipe-to-refresh
         swipeRefresh.setOnRefreshListener {
@@ -54,11 +53,28 @@ class NotificationsFragment : Fragment() {
                 layoutEmpty.visibility = View.GONE
                 rvAnnouncements.visibility = View.VISIBLE
                 
-                adapter = AnnouncementAdapter(announcements)
-                rvAnnouncements.adapter = adapter
+                // Only create adapter if it doesn't exist, otherwise update
+                if (!::adapter.isInitialized) {
+                    adapter = AnnouncementAdapter(announcements)
+                    rvAnnouncements.adapter = adapter
+                } else {
+                    adapter.updateAnnouncements(announcements)
+                }
             }
         }
 
         return view
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Start shimmer only when visible
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerNotifications)?.startShimmer()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        // Stop shimmer when not visible
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerNotifications)?.stopShimmer()
     }
 }

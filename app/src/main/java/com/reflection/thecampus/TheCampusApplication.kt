@@ -21,6 +21,18 @@ class TheCampusApplication : Application() {
         initializeLogging()
         initializeCrashlytics()
         createNotificationChannels()
+        applyTheme()
+    }
+    
+    private fun applyTheme() {
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        
+        val primaryColor = com.reflection.thecampus.utils.ThemeManager.getPrimaryColor(this, isDarkMode)
+        
+        // Store the color in a way that can be accessed by themes
+        val prefs = getSharedPreferences("theme_runtime", MODE_PRIVATE)
+        prefs.edit().putInt("runtime_primary_color", primaryColor).apply()
     }
     
     private fun initializeLogging() {

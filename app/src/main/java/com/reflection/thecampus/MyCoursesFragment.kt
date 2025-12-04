@@ -55,7 +55,6 @@ class MyCoursesFragment : Fragment() {
 
         val shimmer = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerMyCourses)
         val emptyState = view.findViewById<View>(R.id.emptyState)
-        shimmer.startShimmer()
 
         // Setup swipe-to-refresh
         swipeRefresh.setOnRefreshListener {
@@ -98,20 +97,37 @@ class MyCoursesFragment : Fragment() {
                 
                 // All courses in this list are enrolled, so pass all their IDs
                 val enrolledIds = courses.map { it.id }.toSet()
-                adapter = CourseAdapter(courses, enrolledIds) { course ->
-                    val intent = android.content.Intent(activity, CourseDetailActivity::class.java)
-                    intent.putExtra("COURSE_ID", course.id)
-                    startActivity(intent)
+                
+                // Only create adapter if it doesn't exist, otherwise update
+                if (!::adapter.isInitialized) {
+                    adapter = CourseAdapter(courses, enrolledIds) { course ->
+                        val intent = android.content.Intent(activity, CourseDetailActivity::class.java)
+                        intent.putExtra("COURSE_ID", course.id)
+                        startActivity(intent)
+                    }
+                    rvMyCourses.adapter = adapter
+                } else {
+                    adapter.updateCourses(courses, enrolledIds)
                 }
-                rvMyCourses.adapter = adapter
                 timber.log.Timber.d("✓ Adapter set with ${courses.size} courses")
             }
         }
         
-        // Load announcements
-        loadAnnouncements(view)
-        
         return view
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Only load announcements when fragment is visible
+        view?.let { loadAnnouncements(it) }
+        // Start shimmer only when visible
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerMyCourses)?.startShimmer()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        // Stop shimmer when not visible to save resources
+        view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerMyCourses)?.stopShimmer()
     }
     
     private fun loadAnnouncements(rootView: View) {

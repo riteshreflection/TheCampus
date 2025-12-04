@@ -13,10 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 
 class CourseAdapter(
-    private val courses: List<Course>,
-    private val enrolledCourseIds: Set<String> = emptySet(),
+    private var courses: List<Course>,
+    private var enrolledCourseIds: Set<String> = emptySet(),
     private val onCourseClick: (Course) -> Unit
 ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
+    
+    fun updateCourses(newCourses: List<Course>, newEnrolledIds: Set<String>) {
+        courses = newCourses
+        enrolledCourseIds = newEnrolledIds
+        notifyDataSetChanged()
+    }
 
     class CourseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTag: TextView = view.findViewById(R.id.tvCourseTag)

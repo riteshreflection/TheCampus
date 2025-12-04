@@ -17,8 +17,8 @@ android {
         applicationId = "com.reflection.thecampus"
         minSdk = 24
         targetSdk = 36
-        versionCode = 222
-        versionName = "2.2.2"
+        versionCode = 223
+        versionName = "2.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.crashlytics)
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-base:18.5.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.airbnb.android:lottie:6.4.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")

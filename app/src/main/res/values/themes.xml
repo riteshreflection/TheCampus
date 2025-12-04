@@ -20,4 +20,45 @@
         <item name="windowSplashScreenAnimationDuration">300</item>
         <item name="postSplashScreenTheme">@style/Theme.TheCampus</item>
     </style>
+    
+    <!-- Dynamic Theme Overlays - Light Mode -->
+    <style name="Theme.TheCampus.Purple" parent="Theme.TheCampus">
+        <item name="colorPrimary">#6200EE</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Blue" parent="Theme.TheCampus">
+        <item name="colorPrimary">#2196F3</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Teal" parent="Theme.TheCampus">
+        <item name="colorPrimary">#009688</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Green" parent="Theme.TheCampus">
+        <item name="colorPrimary">#4CAF50</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Orange" parent="Theme.TheCampus">
+        <item name="colorPrimary">#FF9800</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Red" parent="Theme.TheCampus">
+        <item name="colorPrimary">#F44336</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Pink" parent="Theme.TheCampus">
+        <item name="colorPrimary">#E91E63</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Indigo" parent="Theme.TheCampus">
+        <item name="colorPrimary">#3F51B5</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Cyan" parent="Theme.TheCampus">
+        <item name="colorPrimary">#00BCD4</item>
+    </style>
+    
+    <style name="Theme.TheCampus.Amber" parent="Theme.TheCampus">
+        <item name="colorPrimary">#FFC107</item>
+    </style>
 </resources>
