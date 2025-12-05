@@ -17,6 +17,19 @@ class GroupChatAdapter(
     private val onMessageLongClick: (GroupChatMessage, View) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    companion object {
+        private const val ADMIN_USER_ID = "5eNyiVGn2SeOyO4RrFBjk3HG8B52"
+        
+        fun formatTime(timestamp: Long): String {
+            return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(java.util.Date(timestamp))
+        }
+        
+        fun formatReactions(reactions: Map<String, String>): String {
+            val grouped = reactions.values.groupingBy { it }.eachCount()
+            return grouped.entries.joinToString(" ") { "${it.key} ${it.value}" }
+        }
+    }
+
     private val messages = mutableListOf<GroupChatMessage>()
     private val VIEW_TYPE_SENT = 1
     private val VIEW_TYPE_RECEIVED = 2
@@ -78,6 +91,11 @@ class GroupChatAdapter(
 
         fun bind(message: GroupChatMessage, onLongClick: (GroupChatMessage, View) -> Unit) {
             tvMessage.text = message.text
+            // Make URLs clickable with aqua color
+            android.text.util.Linkify.addLinks(tvMessage, android.text.util.Linkify.ALL)
+            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.aqua_link))
+            tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
+            
             tvTimestamp.text = formatTime(message.timestamp)
             
             // Handle reply
@@ -93,6 +111,10 @@ class GroupChatAdapter(
             if (message.reactions.isNotEmpty()) {
                 cardReactions.visibility = View.VISIBLE
                 tvReactions.text = formatReactions(message.reactions)
+                // Make clickable to show bottom sheet
+                cardReactions.setOnClickListener {
+                    onLongClick(message, itemView)
+                }
             } else {
                 cardReactions.visibility = View.GONE
             }
@@ -107,6 +129,7 @@ class GroupChatAdapter(
 
     class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvSenderName: TextView = view.findViewById(R.id.tvSenderName)
+        private val ivAdminBadge: android.widget.ImageView = view.findViewById(R.id.ivAdminBadge)
         private val tvMessage: TextView = view.findViewById(R.id.tvMessage)
         private val tvTimestamp: TextView = view.findViewById(R.id.tvTimestamp)
         private val tvReactions: TextView = view.findViewById(R.id.tvReactions)
@@ -116,8 +139,21 @@ class GroupChatAdapter(
         private val tvReplyText: TextView = view.findViewById(R.id.tvReplyText)
 
         fun bind(message: GroupChatMessage, onLongClick: (GroupChatMessage, View) -> Unit) {
-            tvSenderName.text = message.senderName
+            // Check if sender is admin
+            if (message.senderId == ADMIN_USER_ID) {
+                tvSenderName.text = "Admin"
+                ivAdminBadge.visibility = android.view.View.VISIBLE
+            } else {
+                tvSenderName.text = message.senderName
+                ivAdminBadge.visibility = android.view.View.GONE
+            }
+            
             tvMessage.text = message.text
+            // Make URLs clickable with aqua color
+            android.text.util.Linkify.addLinks(tvMessage, android.text.util.Linkify.ALL)
+            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.aqua_link))
+            tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
+            
             tvTimestamp.text = formatTime(message.timestamp)
             
             // Handle reply
@@ -133,6 +169,10 @@ class GroupChatAdapter(
             if (message.reactions.isNotEmpty()) {
                 cardReactions.visibility = View.VISIBLE
                 tvReactions.text = formatReactions(message.reactions)
+                // Make clickable to show bottom sheet
+                cardReactions.setOnClickListener {
+                    onLongClick(message, itemView)
+                }
             } else {
                 cardReactions.visibility = View.GONE
             }
@@ -145,14 +185,4 @@ class GroupChatAdapter(
         }
     }
 
-    companion object {
-        fun formatTime(timestamp: Long): String {
-            return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(timestamp))
-        }
-        
-        fun formatReactions(reactions: Map<String, String>): String {
-            val grouped = reactions.values.groupingBy { it }.eachCount()
-            return grouped.entries.joinToString(" ") { "${it.key} ${it.value}" }
-        }
-    }
 }

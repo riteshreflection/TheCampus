@@ -1,0 +1,27 @@
+
+    private fun setupScrollToBottomFab() {
+        // Show/hide FAB based on scroll position
+        rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                
+                val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+                val lastVisiblePosition = layoutManager?.findLastCompletelyVisibleItemPosition() ?: 0
+                val totalItems = adapter.itemCount
+                
+                // Show FAB if not at bottom
+                if (totalItems > 0 && lastVisiblePosition < totalItems - 1) {
+                    fabScrollToBottom.show()
+                } else {
+                    fabScrollToBottom.hide()
+                }
+            }
+        })
+        
+        // Scroll to bottom on FAB click
+        fabScrollToBottom.setOnClickListener {
+            if (adapter.itemCount > 0) {
+                rvMessages.smoothScrollToPosition(adapter.itemCount - 1)
+            }
+        }
+    }

@@ -17,6 +17,7 @@
     <color name="colorTextPrimary">#212121</color>
     <color name="colorTextSecondary">#757575</color>
     <color name="colorDivider">#BDBDBD</color>
+    <color name="aqua_link">#00CED1</color>
 
     <!-- Light Theme Colors -->
     <color name="md_theme_light_primary">#6200EE</color>

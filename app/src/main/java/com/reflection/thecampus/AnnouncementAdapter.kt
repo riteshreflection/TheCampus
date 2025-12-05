@@ -33,6 +33,10 @@ class AnnouncementAdapter(
         holder.tvCourseName.text = announcement.courseName
         holder.tvAuthor.text = "By: ${announcement.author}"
         holder.tvMessage.text = announcement.message
+        // Make URLs, emails, and phone numbers clickable with aqua color
+        android.text.util.Linkify.addLinks(holder.tvMessage, android.text.util.Linkify.ALL)
+        holder.tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.aqua_link))
+        holder.tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
         
         // Simplified time setting to avoid potential inference issues
         val timeString = getTimeAgo(announcement.createdAt)

@@ -69,6 +69,21 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        // Chat Enable/Disable Logic
+        val switchEnableChat = findViewById<SwitchMaterial>(R.id.switchEnableChat)
+        val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
+        switchEnableChat.isChecked = prefs.getBoolean("chat_enabled", true)
+
+        switchEnableChat.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("chat_enabled", isChecked).apply()
+            // Notify user to restart or refresh
+            android.widget.Toast.makeText(
+                this,
+                if (isChecked) "Chat enabled. Restart app to see changes." else "Chat disabled. Restart app to see changes.",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
         // Theme Color Click
         val btnThemeColor = findViewById<View>(R.id.btnThemeColor)
         val tvCurrentTheme = findViewById<TextView>(R.id.tvCurrentTheme)

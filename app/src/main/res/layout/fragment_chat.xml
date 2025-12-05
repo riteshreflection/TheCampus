@@ -206,4 +206,17 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- Scroll to Bottom FAB -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabScrollToBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_arrow_down"
+        android:visibility="gone"
+        app:fabSize="mini"
+        app:tint="@android:color/white" />
+
 </LinearLayout>

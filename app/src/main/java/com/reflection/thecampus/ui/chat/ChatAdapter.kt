@@ -65,6 +65,11 @@ class ChatAdapter(private val currentUserId: String) : RecyclerView.Adapter<Chat
 
         fun bind(message: ChatMessage, isCurrentUser: Boolean, showDate: Boolean) {
             tvMessage.text = message.text
+            // Make URLs, emails, and phone numbers clickable with aqua color
+            android.text.util.Linkify.addLinks(tvMessage, android.text.util.Linkify.ALL)
+            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.aqua_link))
+            tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
+            
             tvTimestamp.text = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(message.timestamp))
             
             if (showDate) {

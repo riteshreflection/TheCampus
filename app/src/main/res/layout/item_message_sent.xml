@@ -96,7 +96,7 @@
         android:layout_height="wrap_content"
         app:cardBackgroundColor="?attr/colorSurface"
         app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
+        app:cardElevation="2dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/cardMessage"
         app:layout_constraintEnd_toEndOf="@id/cardMessage"

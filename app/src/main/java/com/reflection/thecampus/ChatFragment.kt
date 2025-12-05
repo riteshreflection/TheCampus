@@ -31,6 +31,7 @@ class ChatFragment : Fragment() {
     private lateinit var cardReplyPreview: CardView
     private lateinit var tvReplyPreviewText: TextView
     private lateinit var btnCancelReply: ImageView
+    private lateinit var fabScrollToBottom: com.google.android.material.floatingactionbutton.FloatingActionButton
 
     private lateinit var adapter: GroupChatAdapter
     private val auth = FirebaseAuth.getInstance()
@@ -40,6 +41,7 @@ class ChatFragment : Fragment() {
     private var enrolledCourses = listOf<Course>()
     private var messagesListener: ValueEventListener? = null
     private var replyToMessage: GroupChatMessage? = null
+    private var countdownTimer: android.os.CountDownTimer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,10 +60,12 @@ class ChatFragment : Fragment() {
         cardReplyPreview = view.findViewById(R.id.cardReplyPreview)
         tvReplyPreviewText = view.findViewById(R.id.tvReplyPreviewText)
         btnCancelReply = view.findViewById(R.id.btnCancelReply)
+        fabScrollToBottom = view.findViewById(R.id.fabScrollToBottom)
 
         setupRecyclerView()
         setupMessageInput()
         setupReplyPreview()
+        setupScrollToBottomFab()
         loadEnrolledCourses()
 
         return view
@@ -108,7 +112,7 @@ class ChatFragment : Fragment() {
         btnSend.setOnClickListener {
             if (currentCourseId == null) {
                 Toast.makeText(context, "Please select a course first", Toast.LENGTH_SHORT).show()
-                Timber.e("Attempted to send message without courseId")
+
                 return@setOnClickListener
             }
             sendMessage()
@@ -118,6 +122,33 @@ class ChatFragment : Fragment() {
     private fun setupReplyPreview() {
         btnCancelReply.setOnClickListener {
             clearReply()
+        }
+    }
+
+    private fun setupScrollToBottomFab() {
+        // Show/hide FAB based on scroll position
+        rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                
+                val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+                val lastVisiblePosition = layoutManager?.findLastCompletelyVisibleItemPosition() ?: 0
+                val totalItems = adapter.itemCount
+                
+                // Show FAB if not at bottom
+                if (totalItems > 0 && lastVisiblePosition < totalItems - 1) {
+                    fabScrollToBottom.show()
+                } else {
+                    fabScrollToBottom.hide()
+                }
+            }
+        })
+        
+        // Scroll to bottom on FAB click
+        fabScrollToBottom.setOnClickListener {
+            if (adapter.itemCount > 0) {
+                rvMessages.smoothScrollToPosition(adapter.itemCount - 1)
+            }
         }
     }
     
@@ -134,39 +165,46 @@ class ChatFragment : Fragment() {
     
     private fun showReactionDialog(message: GroupChatMessage, anchorView: View) {
         val userId = auth.currentUser?.uid ?: return
-        val canEdit = message.senderId == userId
-        val canDelete = message.senderId == userId
+        val isOwnMessage = message.senderId == userId
         
-        val dialog = com.reflection.thecampus.ui.dialogs.ReactionBarDialog(
-            requireContext(),
-            onReactionSelected = { emoji ->
-                addReaction(message, emoji)
+        val bottomSheet = com.reflection.thecampus.ui.dialogs.MessageActionsBottomSheet(
+            message = message,
+            isOwnMessage = isOwnMessage,
+            onReactionToggle = { emoji ->
+                toggleReaction(message, emoji)
             },
-            onEdit = if (canEdit) {{ editMessage(message) }} else null,
-            onDelete = if (canDelete) {{ deleteMessage(message) }} else null
+            onReply = {
+                setReplyTo(message)
+            },
+            onEdit = if (isOwnMessage) {{ editMessage(message) }} else null,
+            onDelete = if (isOwnMessage) {{ deleteMessage(message) }} else null,
+            onReport = if (!isOwnMessage) {{ reportMessage(message) }} else null
         )
         
-        // Position dialog near the message
-        dialog.show()
-        dialog.window?.let { window ->
-            val location = IntArray(2)
-            anchorView.getLocationOnScreen(location)
-            
-            val params = window.attributes
-            params.y = location[1] - anchorView.height / 2
-            window.attributes = params
-        }
+        bottomSheet.show(childFragmentManager, com.reflection.thecampus.ui.dialogs.MessageActionsBottomSheet.TAG)
     }
     
-    private fun addReaction(message: GroupChatMessage, emoji: String) {
+    private fun toggleReaction(message: GroupChatMessage, emoji: String) {
         val courseId = currentCourseId ?: return
         val userId = auth.currentUser?.uid ?: return
         
-        database.getReference("courseChats/$courseId/messages/${message.id}/reactions/$userId")
-            .setValue(emoji)
-            .addOnFailureListener {
-                Toast.makeText(context, "Failed to add reaction", Toast.LENGTH_SHORT).show()
-            }
+        val reactionsRef = database.getReference("courseChats/$courseId/messages/${message.id}/reactions")
+        
+        // Check if user already reacted with this emoji
+        val existingReaction = message.reactions.entries.find { 
+            it.key == userId && it.value == emoji 
+        }
+        
+        if (existingReaction != null) {
+            // Remove reaction
+            reactionsRef.child(userId).removeValue()
+        } else {
+            // Add or update reaction
+            reactionsRef.child(userId).setValue(emoji)
+                .addOnFailureListener {
+                    Toast.makeText(context, "Failed to add reaction", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
     
     private fun editMessage(message: GroupChatMessage) {
@@ -214,6 +252,36 @@ class ChatFragment : Fragment() {
             .show()
     }
 
+    private fun reportMessage(message: GroupChatMessage) {
+        val userId = auth.currentUser?.uid ?: return
+        val courseId = currentCourseId ?: return
+        
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Report Message")
+            .setMessage("Report this message as inappropriate?")
+            .setPositiveButton("Report") { _, _ ->
+                val reportRef = database.getReference("messageReports").push()
+                val report = mapOf(
+                    "messageId" to message.id,
+                    "courseId" to courseId,
+                    "reportedBy" to userId,
+                    "reportedAt" to System.currentTimeMillis(),
+                    "messageText" to message.text,
+                    "messageSenderId" to message.senderId
+                )
+                
+                reportRef.setValue(report)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Message reported", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Failed to report message", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     private fun loadEnrolledCourses() {
         val userId = auth.currentUser?.uid ?: return
 
@@ -251,7 +319,7 @@ class ChatFragment : Fragment() {
                             // CRITICAL FIX: Set the course ID from the Firebase key
                             val courseWithId = course.copy(id = courseId)
                             courses.add(courseWithId)
-                            Timber.d("Loaded course: ${course.basicInfo.name} with ID: $courseId")
+
                         }
                         
                         loadedCount++
@@ -281,7 +349,7 @@ class ChatFragment : Fragment() {
         spinnerCourses.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val newCourseId = courses[position].id
-                Timber.d("Spinner selected: position=$position, courseId=$newCourseId, courseName=${courses[position].basicInfo.name}")
+
                 
                 // Only reload if course actually changed
                 if (currentCourseId != newCourseId) {
@@ -337,7 +405,7 @@ class ChatFragment : Fragment() {
                     rvMessages.scrollToPosition(messages.size - 1)
                 }
                 
-                Timber.d("Loaded ${messages.size} messages for course: $courseId")
+
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -355,6 +423,18 @@ class ChatFragment : Fragment() {
         val text = etMessage.text.toString().trim()
         
         if (text.isEmpty()) return
+
+        // Validate message
+        val validationResult = com.reflection.thecampus.utils.MessageValidator.validateMessage(text)
+        if (!validationResult.isValid) {
+            if (validationResult.remainingTimeSeconds > 0) {
+                // Show countdown timer
+                showRateLimitTimer(validationResult.errorMessage ?: "Rate limit", validationResult.remainingTimeSeconds)
+            } else {
+                Toast.makeText(context, validationResult.errorMessage, Toast.LENGTH_SHORT).show()
+            }
+            return
+        }
 
         // FIXED: Include courseId in the path
         val messageRef = database.getReference("courseChats/$courseId/messages").push()
@@ -382,11 +462,11 @@ class ChatFragment : Fragment() {
                         .addOnSuccessListener {
                             etMessage.setText("")
                             clearReply()
-                            Timber.d("Message sent to courseChats/$courseId/messages/$messageId")
+
                         }
                         .addOnFailureListener {
                             Toast.makeText(context, "Failed to send message", Toast.LENGTH_SHORT).show()
-                            Timber.e("Failed to send message: ${it.message}")
+
                         }
                 }
 
@@ -394,6 +474,34 @@ class ChatFragment : Fragment() {
                     Timber.e("Error getting user name: ${error.message}")
                 }
             })
+    }
+
+    private fun showRateLimitTimer(message: String, seconds: Int) {
+        // Cancel any existing timer
+        countdownTimer?.cancel()
+        
+        // Disable send button
+        btnSend.isEnabled = false
+        btnSend.alpha = 0.5f
+        
+        // Start countdown
+        countdownTimer = object : android.os.CountDownTimer((seconds * 1000).toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = (millisUntilFinished / 1000).toInt()
+                val timeText = if (secondsLeft >= 60) {
+                    "${secondsLeft / 60}m ${secondsLeft % 60}s"
+                } else {
+                    "${secondsLeft}s"
+                }
+                etMessage.hint = "$message $timeText"
+            }
+
+            override fun onFinish() {
+                etMessage.hint = "Type a message..."
+                btnSend.isEnabled = etMessage.text.isNotBlank()
+                btnSend.alpha = if (etMessage.text.isNotBlank()) 1.0f else 0.5f
+            }
+        }.start()
     }
 
     private fun showNoCourses() {
@@ -409,5 +517,6 @@ class ChatFragment : Fragment() {
                 database.getReference("courseChats/$courseId/messages").removeEventListener(it)
             }
         }
+        countdownTimer?.cancel()
     }
 }
