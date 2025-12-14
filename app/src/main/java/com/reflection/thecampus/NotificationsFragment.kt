@@ -70,6 +70,48 @@ class NotificationsFragment : Fragment() {
         super.onResume()
         // Start shimmer only when visible
         view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerNotifications)?.startShimmer()
+        checkNotificationPermission()
+    }
+    
+    private fun checkNotificationPermission() {
+        val context = context ?: return
+        val card = view?.findViewById<View>(R.id.permissionAlertCard) ?: return
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                    context, 
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                card.visibility = View.VISIBLE
+                setupEnableButton()
+            } else {
+                card.visibility = View.GONE
+            }
+        } else {
+            // For older Android versions, we rely on NotificationManager check
+            val notificationManager = androidx.core.app.NotificationManagerCompat.from(context)
+            if (!notificationManager.areNotificationsEnabled()) {
+                card.visibility = View.VISIBLE
+                setupEnableButton()
+            } else {
+                card.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setupEnableButton() {
+        view?.findViewById<View>(R.id.btnEnableNotifications)?.setOnClickListener {
+            val intent = android.content.Intent().apply {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, context?.packageName)
+                } else {
+                    action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = android.net.Uri.fromParts("package", context?.packageName, null)
+                }
+            }
+            startActivity(intent)
+        }
     }
     
     override fun onPause() {

@@ -21,6 +21,7 @@ import java.util.*
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var rvMessages: RecyclerView
+    private lateinit var layoutEmpty: View
     private lateinit var etMessage: EditText
     private lateinit var btnSend: FloatingActionButton
     private lateinit var chatAdapter: ChatAdapter
@@ -34,6 +35,10 @@ class ChatActivity : AppCompatActivity() {
     
     private val messagesList = mutableListOf<ChatMessage>()
     private var messagesListener: ValueEventListener? = null
+    
+    // Chat feature status
+    private var isChatFeatureActive = true
+    private var chatFeatureListener: ValueEventListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +66,7 @@ class ChatActivity : AppCompatActivity() {
         initializeViews()
         setupRecyclerView()
         setupMessageInput()
+        checkChatFeatureStatus()
     }
     
     override fun onStart() {
@@ -72,6 +78,10 @@ class ChatActivity : AppCompatActivity() {
         super.onStop()
         messagesListener?.let { database.removeEventListener(it) }
         messagesListener = null
+        chatFeatureListener?.let {
+            FirebaseDatabase.getInstance().getReference("siteSettings/appControls/chatFeature/isActive")
+                .removeEventListener(it)
+        }
     }
 
     private fun setupToolbar() {
@@ -87,6 +97,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         rvMessages = findViewById(R.id.rvMessages)
+        layoutEmpty = findViewById(R.id.layoutEmpty)
         etMessage = findViewById(R.id.etMessage)
         btnSend = findViewById(R.id.btnSend)
     }
@@ -144,6 +155,57 @@ class ChatActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to send message", Toast.LENGTH_SHORT).show()
             }
+    }
+    
+    private fun checkChatFeatureStatus() {
+        chatFeatureListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                isChatFeatureActive = snapshot.getValue(Boolean::class.java) ?: true
+                
+                if (!isChatFeatureActive) {
+                    showMaintenanceState()
+                } else {
+                    hideMaintenanceState()
+                    // If chat was just enabled, start listening for messages
+                    if (messagesListener == null) {
+                        listenForMessages()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                timber.log.Timber.e(error.toException(), "Error checking chat feature status")
+                // Default to enabled on error
+                isChatFeatureActive = true
+            }
+        }
+        
+        FirebaseDatabase.getInstance().getReference("siteSettings/appControls/chatFeature/isActive")
+            .addValueEventListener(chatFeatureListener!!)
+    }
+    
+    private fun showMaintenanceState() {
+        layoutEmpty.visibility = View.VISIBLE
+        rvMessages.visibility = View.GONE
+        
+        // Disable message input
+        etMessage.isEnabled = false
+        btnSend.isEnabled = false
+        btnSend.alpha = 0.5f
+        etMessage.hint = "Chat is currently disabled"
+        
+        // Clear messages
+        messagesList.clear()
+        chatAdapter.setMessages(emptyList())
+    }
+    
+    private fun hideMaintenanceState() {
+        layoutEmpty.visibility = View.GONE
+        rvMessages.visibility = View.VISIBLE
+        
+        // Re-enable message input
+        etMessage.isEnabled = true
+        etMessage.hint = "Type a message..."
     }
 
     private fun listenForMessages() {

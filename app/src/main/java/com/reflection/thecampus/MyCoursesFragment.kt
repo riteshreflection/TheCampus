@@ -19,14 +19,20 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.reflection.thecampus.adapter.PollAdapter
+import com.reflection.thecampus.data.model.Poll
+import com.reflection.thecampus.data.model.PollResponse
 import com.reflection.thecampus.data.model.SiteAnnouncement
 
 class MyCoursesFragment : Fragment() {
 
     private val viewModel: MyCoursesViewModel by activityViewModels()
     private lateinit var adapter: CourseAdapter
+    private lateinit var pollAdapter: PollAdapter
     private var announcementView: View? = null
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private val database = FirebaseDatabase.getInstance()
+    private val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +57,9 @@ class MyCoursesFragment : Fragment() {
 
         swipeRefresh = view.findViewById(R.id.swipeRefreshMyCourses)
         val rvMyCourses = view.findViewById<RecyclerView>(R.id.rvMyCourses)
+        val rvPolls = view.findViewById<RecyclerView>(R.id.rvPolls)
         rvMyCourses.layoutManager = LinearLayoutManager(context)
+        rvPolls.layoutManager = LinearLayoutManager(context)
 
         val shimmer = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerMyCourses)
         val emptyState = view.findViewById<View>(R.id.emptyState)
@@ -59,6 +67,7 @@ class MyCoursesFragment : Fragment() {
         // Setup swipe-to-refresh
         swipeRefresh.setOnRefreshListener {
             viewModel.refresh()
+            loadPolls(view)
         }
 
         // Observe refresh state
@@ -110,6 +119,9 @@ class MyCoursesFragment : Fragment() {
                     adapter.updateCourses(courses, enrolledIds)
                 }
                 timber.log.Timber.d("✓ Adapter set with ${courses.size} courses")
+                
+                // Load polls after courses are loaded
+                loadPolls(view)
             }
         }
         
@@ -201,5 +213,94 @@ class MyCoursesFragment : Fragment() {
         val dismissedIds = prefs.getStringSet("dismissed_announcements", setOf())?.toMutableSet() ?: mutableSetOf()
         dismissedIds.add(announcementId)
         prefs.edit().putStringSet("dismissed_announcements", dismissedIds).apply()
+    }
+    
+    private fun loadPolls(rootView: View) {
+        val userId = auth.currentUser?.uid ?: return
+        val rvPolls = rootView.findViewById<RecyclerView>(R.id.rvPolls)
+        
+        database.getReference("polls")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val allPolls = mutableListOf<Poll>()
+                    
+                    for (child in snapshot.children) {
+                        try {
+                            val poll = child.getValue(Poll::class.java)
+                            if (poll != null) {
+                                val pollWithId = poll.copy(id = child.key ?: "")
+                                allPolls.add(pollWithId)
+                            }
+                        } catch (e: Exception) {
+                            timber.log.Timber.e(e, "Error parsing poll")
+                        }
+                    }
+                    
+                    // Filter polls for current user
+                    val enrolledCourseIds = viewModel.enrolledCourses.value?.map { it.id }?.toSet() ?: emptySet()
+                    val visiblePolls = filterPollsForUser(allPolls, enrolledCourseIds, userId)
+                    
+                    if (visiblePolls.isNotEmpty()) {
+                        rvPolls.visibility = View.VISIBLE
+                        
+                        if (!::pollAdapter.isInitialized) {
+                            pollAdapter = PollAdapter(visiblePolls, userId) { poll, selectedOptions ->
+                                submitVote(poll, selectedOptions)
+                            }
+                            rvPolls.adapter = pollAdapter
+                        } else {
+                            pollAdapter.updatePolls(visiblePolls)
+                        }
+                    } else {
+                        rvPolls.visibility = View.GONE
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    timber.log.Timber.e("Error loading polls: ${error.message}")
+                }
+            })
+    }
+    
+    private fun filterPollsForUser(allPolls: List<Poll>, enrolledCourseIds: Set<String>, userId: String): List<Poll> {
+        return allPolls.filter { poll ->
+            // 1. Must be active
+            if (poll.status != "active") return@filter false
+            
+            // 2. Must not be expired
+            if (poll.expiresAt != null && System.currentTimeMillis() > poll.expiresAt) {
+                return@filter false
+            }
+            
+            // 3. Check course access
+            if (poll.courseIds != null && poll.courseIds.isNotEmpty()) {
+                // Course-specific poll
+                val hasAccess = poll.courseIds.any { it in enrolledCourseIds }
+                if (!hasAccess) return@filter false
+            }
+            // If courseIds is null/empty, it's a global poll - show to everyone
+            
+            true
+        }
+    }
+    
+    private fun submitVote(poll: Poll, selectedOptions: List<String>) {
+        val userId = auth.currentUser?.uid ?: return
+        
+        val response = PollResponse(
+            selectedOptions = selectedOptions,
+            submittedAt = System.currentTimeMillis()
+        )
+        
+        database.getReference("polls/${poll.id}/responses/$userId")
+            .setValue(response)
+            .addOnSuccessListener {
+                // Reload polls to show updated results
+                view?.let { loadPolls(it) }
+            }
+            .addOnFailureListener { e ->
+                timber.log.Timber.e(e, "Error submitting vote")
+                android.widget.Toast.makeText(context, "Failed to submit vote", android.widget.Toast.LENGTH_SHORT).show()
+            }
     }
 }

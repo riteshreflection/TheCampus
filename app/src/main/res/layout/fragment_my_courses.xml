@@ -106,11 +106,34 @@
                 android:layout_height="match_parent"
                 android:visibility="gone"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMyCourses"
+            <!-- Scrollable Content -->
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"/>
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Polls Section -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPolls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="false" />
+
+                    <!-- Courses Section -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMyCourses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
         </FrameLayout>
 

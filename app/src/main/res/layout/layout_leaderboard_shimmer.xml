@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shimmerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_alpha="0.7"
+    app:shimmer_direction="left_to_right"
+    app:shimmer_duration="1500"
+    app:shimmer_repeat_count="-1"
+    app:shimmer_repeat_delay="0"
+    app:shimmer_shape="linear"
+    app:shimmer_tilt="0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="8dp">
+
+        <!-- Shimmer Item 1 -->
+        <include layout="@layout/item_leaderboard_shimmer" />
+
+        <!-- Shimmer Item 2 -->
+        <include layout="@layout/item_leaderboard_shimmer" />
+
+        <!-- Shimmer Item 3 -->
+        <include layout="@layout/item_leaderboard_shimmer" />
+
+        <!-- Shimmer Item 4 -->
+        <include layout="@layout/item_leaderboard_shimmer" />
+
+        <!-- Shimmer Item 5 -->
+        <include layout="@layout/item_leaderboard_shimmer" />
+
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

@@ -50,26 +50,31 @@
     </LinearLayout>
 
 
-    <!-- Messages RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMessages"
+    <!-- Messages Container with FAB -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:padding="8dp" />
+        android:layout_weight="1">
 
-    <!-- Empty State -->
-    <LinearLayout
-        android:id="@+id/layoutEmpty"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        <!-- Messages RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMessages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp" />
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/layoutEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
 
         <ImageView
+            android:id="@+id/ivEmptyIcon"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:alpha="0.5"
@@ -77,6 +82,7 @@
             app:tint="?attr/colorOnSurface" />
 
         <TextView
+            android:id="@+id/tvEmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -86,6 +92,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvEmptySubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -94,6 +101,21 @@
             android:textColor="?attr/colorOnSurface"
             android:textSize="14sp" />
     </LinearLayout>
+
+        <!-- Scroll to Bottom FAB -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabScrollToBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_arrow_down"
+            android:visibility="gone"
+            app:fabSize="mini"
+            app:tint="?attr/colorSurface" />
+
+    </FrameLayout>
 
     <!-- Typing Indicator -->
     <TextView
@@ -205,18 +227,5 @@
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <!-- Scroll to Bottom FAB -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabScrollToBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="80dp"
-        android:src="@drawable/ic_arrow_down"
-        android:visibility="gone"
-        app:fabSize="mini"
-        app:tint="@android:color/white" />
 
 </LinearLayout>

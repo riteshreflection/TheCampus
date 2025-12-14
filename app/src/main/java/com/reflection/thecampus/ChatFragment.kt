@@ -27,6 +27,9 @@ class ChatFragment : Fragment() {
     private lateinit var etMessage: EditText
     private lateinit var btnSend: ImageButton
     private lateinit var layoutEmpty: View
+    private lateinit var tvEmptyTitle: TextView
+    private lateinit var tvEmptySubtitle: TextView
+    private lateinit var ivEmptyIcon: ImageView
     private lateinit var tvTypingIndicator: TextView
     private lateinit var cardReplyPreview: CardView
     private lateinit var tvReplyPreviewText: TextView
@@ -42,6 +45,12 @@ class ChatFragment : Fragment() {
     private var messagesListener: ValueEventListener? = null
     private var replyToMessage: GroupChatMessage? = null
     private var countdownTimer: android.os.CountDownTimer? = null
+    
+    // Chat feature status
+    private var isChatFeatureActive = true
+    private var isCourseChatActive = true
+    private var chatFeatureListener: ValueEventListener? = null
+    private var courseChatListener: ValueEventListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +65,9 @@ class ChatFragment : Fragment() {
         etMessage = view.findViewById(R.id.etMessage)
         btnSend = view.findViewById(R.id.btnSend)
         layoutEmpty = view.findViewById(R.id.layoutEmpty)
+        tvEmptyTitle = view.findViewById(R.id.tvEmptyTitle)
+        tvEmptySubtitle = view.findViewById(R.id.tvEmptySubtitle)
+        ivEmptyIcon = view.findViewById(R.id.ivEmptyIcon)
         tvTypingIndicator = view.findViewById(R.id.tvTypingIndicator)
         cardReplyPreview = view.findViewById(R.id.cardReplyPreview)
         tvReplyPreviewText = view.findViewById(R.id.tvReplyPreviewText)
@@ -66,6 +78,7 @@ class ChatFragment : Fragment() {
         setupMessageInput()
         setupReplyPreview()
         setupScrollToBottomFab()
+        checkGlobalChatFeatureStatus()
         loadEnrolledCourses()
 
         return view
@@ -378,14 +391,29 @@ class ChatFragment : Fragment() {
     }
 
     private fun loadMessagesForCourse(courseId: String) {
+        // Check course-specific chat status first
+        checkCourseChatStatus(courseId)
+        
         // Listener is already removed in onItemSelected, but double check to be safe
         messagesListener?.let { listener ->
              database.getReference("courseChats").removeEventListener(listener) // Failsafe
         }
 
+        // Check if chat is enabled before loading messages
+        if (!isChatFeatureActive || !isCourseChatActive) {
+            showMaintenanceState()
+            return
+        }
+        
         // Listen for messages in NEW course
         messagesListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Re-check status in case it changed
+                if (!isChatFeatureActive || !isCourseChatActive) {
+                    showMaintenanceState()
+                    return
+                }
+                
                 val messages = mutableListOf<GroupChatMessage>()
                 
                 snapshot.children.forEach { child ->
@@ -397,15 +425,12 @@ class ChatFragment : Fragment() {
                 adapter.setMessages(messages.sortedBy { it.timestamp })
                 
                 if (messages.isEmpty()) {
-                    layoutEmpty.visibility = View.VISIBLE
-                    rvMessages.visibility = View.GONE
+                    showEmptyState()
                 } else {
                     layoutEmpty.visibility = View.GONE
                     rvMessages.visibility = View.VISIBLE
                     rvMessages.scrollToPosition(messages.size - 1)
                 }
-                
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -506,8 +531,92 @@ class ChatFragment : Fragment() {
 
     private fun showNoCourses() {
         Toast.makeText(context, "You are not enrolled in any courses", Toast.LENGTH_LONG).show()
+        showEmptyState()
+    }
+    
+    private fun checkGlobalChatFeatureStatus() {
+        chatFeatureListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                isChatFeatureActive = snapshot.getValue(Boolean::class.java) ?: true
+                
+                // If chat is disabled, show maintenance state
+                if (!isChatFeatureActive) {
+                    showMaintenanceState()
+                } else if (currentCourseId != null) {
+                    // Re-check course status if we have a selected course
+                    checkCourseChatStatus(currentCourseId!!)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e("Error checking chat feature status: ${error.message}")
+                // Default to enabled on error
+                isChatFeatureActive = true
+            }
+        }
+        
+        database.getReference("siteSettings/appControls/chatFeature/isActive")
+            .addValueEventListener(chatFeatureListener!!)
+    }
+    
+    private fun checkCourseChatStatus(courseId: String) {
+        // Remove previous listener if exists
+        courseChatListener?.let {
+            database.getReference("siteSettings/appControls/chatFeature").removeEventListener(it)
+        }
+        
+        courseChatListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                isCourseChatActive = snapshot.getValue(Boolean::class.java) ?: true
+                
+                // Reload messages with new status
+                if (currentCourseId == courseId) {
+                    if (!isChatFeatureActive || !isCourseChatActive) {
+                        showMaintenanceState()
+                    } else {
+                        // Status is good, messages will load via existing listener
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e("Error checking course chat status: ${error.message}")
+                // Default to enabled on error
+                isCourseChatActive = true
+            }
+        }
+        
+        database.getReference("siteSettings/appControls/chatFeature/$courseId")
+            .addValueEventListener(courseChatListener!!)
+    }
+    
+    private fun showMaintenanceState() {
         layoutEmpty.visibility = View.VISIBLE
         rvMessages.visibility = View.GONE
+        adapter.setMessages(emptyList())
+        
+        tvEmptyTitle.text = "Chat Unavailable"
+        tvEmptySubtitle.text = "Chat features is under maintenance"
+        ivEmptyIcon.setImageResource(R.drawable.ic_settings)
+        
+        // Disable message input
+        etMessage.isEnabled = false
+        btnSend.isEnabled = false
+        btnSend.alpha = 0.5f
+        etMessage.hint = "Chat is currently disabled"
+    }
+    
+    private fun showEmptyState() {
+        layoutEmpty.visibility = View.VISIBLE
+        rvMessages.visibility = View.GONE
+        
+        tvEmptyTitle.text = "No messages yet"
+        tvEmptySubtitle.text = "Start a conversation!"
+        ivEmptyIcon.setImageResource(R.drawable.ic_chat_bubble)
+        
+        // Enable message input
+        etMessage.isEnabled = true
+        etMessage.hint = "Type a message..."
     }
 
     override fun onDestroyView() {
@@ -516,6 +625,12 @@ class ChatFragment : Fragment() {
             currentCourseId?.let { courseId ->
                 database.getReference("courseChats/$courseId/messages").removeEventListener(it)
             }
+        }
+        chatFeatureListener?.let {
+            database.getReference("siteSettings/appControls/chatFeature/isActive").removeEventListener(it)
+        }
+        courseChatListener?.let {
+            database.getReference("siteSettings/appControls/chatFeature").removeEventListener(it)
         }
         countdownTimer?.cancel()
     }

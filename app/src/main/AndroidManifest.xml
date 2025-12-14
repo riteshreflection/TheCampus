@@ -176,6 +176,13 @@
             android:exported="false"
             android:screenOrientation="fullSensor" />
 
+        <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+
+
         <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false">

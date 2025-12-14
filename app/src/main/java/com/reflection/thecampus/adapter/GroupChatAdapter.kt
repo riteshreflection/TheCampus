@@ -93,7 +93,7 @@ class GroupChatAdapter(
             tvMessage.text = message.text
             // Make URLs clickable with aqua color
             android.text.util.Linkify.addLinks(tvMessage, android.text.util.Linkify.ALL)
-            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.aqua_link))
+            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.colorError))
             tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
             
             tvTimestamp.text = formatTime(message.timestamp)
@@ -151,7 +151,7 @@ class GroupChatAdapter(
             tvMessage.text = message.text
             // Make URLs clickable with aqua color
             android.text.util.Linkify.addLinks(tvMessage, android.text.util.Linkify.ALL)
-            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.aqua_link))
+            tvMessage.setLinkTextColor(androidx.core.content.ContextCompat.getColor(itemView.context, R.color.colorError))
             tvMessage.movementMethod = android.text.method.LinkMovementMethod.getInstance()
             
             tvTimestamp.text = formatTime(message.timestamp)

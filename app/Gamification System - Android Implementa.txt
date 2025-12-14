@@ -1,0 +1,799 @@
+Leaderboard System - Android Implementation Guide
+📋 Overview
+This guide explains how to implement 6 different types of leaderboards in your Android app, matching the web implementation. Each leaderboard ranks users by different metrics to encourage various aspects of engagement.
+
+🏆 Leaderboard Types
+1. Global Leaderboard
+Metric: Total points
+Description: All-time top performers
+Limit: Top 50 users
+2. Weekly Leaderboard
+Metric: Total points (active in last 7 days)
+Description: Most active students this week
+Limit: Top 50 users
+3. Streak Leaderboard
+Metric: Current login streak
+Description: Longest active daily login streaks
+Limit: Top 50 users
+4. Accuracy Leaderboard
+Metric: Average test score
+Description: Highest average accuracy
+Requirement: Minimum 5 tests completed
+Limit: Top 50 users
+5. Test Masters Leaderboard
+Metric: Total tests completed
+Description: Most tests attempted
+Limit: Top 50 users
+6. Level Ranking
+Metric: Current level
+Description: Highest level achievers
+Limit: Top 50 users
+📊 Data Model
+LeaderboardEntry
+data class LeaderboardEntry(
+    val userId: String,
+    val displayName: String,
+    val email: String? = null,
+    val points: Int = 0,
+    val level: Int = 1,
+    val currentStreak: Int = 0,
+    val longestStreak: Int = 0,
+    val totalTests: Int = 0,
+    val averageScore: Double = 0.0,
+    val totalTimeSpent: Long = 0,
+    val coursesCompleted: Int = 0,
+    val rank: Int = 0,
+    val avatar: String? = null,
+    val lastActive: Long = System.currentTimeMillis()
+)
+🔄 Data Fetching Logic
+Step 1: Fetch All User Data
+suspend fun fetchLeaderboardData(): List<LeaderboardEntry> {
+    val database = FirebaseDatabase.getInstance().reference
+    
+    // 1. Fetch user profiles - THIS IS CRITICAL FOR DISPLAY NAMES
+    val userProfilesRef = database.child("userProfiles")
+    val profilesSnapshot = userProfilesRef.get().await()
+    
+    // 2. Fetch gamification data
+    val usersGamificationRef = database.child("users")
+    val gamificationSnapshot = usersGamificationRef.get().await()
+    
+    if (!profilesSnapshot.exists()) {
+        Log.e("Leaderboard", "No user profiles found!")
+        return emptyList()
+    }
+    
+    val userProfiles = profilesSnapshot.value as? Map<String, Any> ?: run {
+        Log.e("Leaderboard", "Failed to parse user profiles")
+        return emptyList()
+    }
+    
+    val allGamificationData = gamificationSnapshot.value as? Map<String, Any> ?: emptyMap()
+    
+    val entries = mutableListOf<LeaderboardEntry>()
+    
+    Log.d("Leaderboard", "Processing ${userProfiles.size} user profiles")
+    
+    userProfiles.forEach { (uid, profileData) ->
+        val profile = profileData as? Map<String, Any> ?: run {
+            Log.w("Leaderboard", "Invalid profile data for user: $uid")
+            return@forEach
+        }
+        
+        val userGamification = allGamificationData[uid] as? Map<String, Any>
+        val gamification = userGamification?.get("gamification") as? Map<String, Any>
+        
+        if (gamification != null) {
+            val stats = gamification["stats"] as? Map<String, Any> ?: emptyMap()
+            
+            // IMPORTANT: Get display name from profile, NOT from gamification
+            val displayName = profile["fullName"] as? String 
+                ?: profile["name"] as? String 
+                ?: profile["displayName"] as? String 
+                ?: "User $uid"
+            
+            Log.d("Leaderboard", "User: $displayName (ID: $uid)")
+            
+            entries.add(
+                LeaderboardEntry(
+                    userId = uid,
+                    displayName = displayName,  // Use the fetched display name
+                    email = profile["email"] as? String,
+                    points = (gamification["points"] as? Number)?.toInt() ?: 0,
+                    level = (gamification["level"] as? Number)?.toInt() ?: 1,
+                    currentStreak = (gamification["currentStreak"] as? Number)?.toInt() ?: 0,
+                    longestStreak = (gamification["longestStreak"] as? Number)?.toInt() ?: 0,
+                    totalTests = (stats["totalTests"] as? Number)?.toInt() ?: 0,
+                    averageScore = (stats["averageAccuracy"] as? Number)?.toDouble() ?: 0.0,
+                    totalTimeSpent = (stats["totalStudyTime"] as? Number)?.toLong() ?: 0L,
+                    coursesCompleted = (stats["coursesCompleted"] as? Number)?.toInt() ?: 0,
+                    avatar = profile["profilePictureUrl"] as? String 
+                        ?: profile["photoURL"] as? String,
+                    lastActive = (gamification["lastActiveDate"] as? Number)?.toLong() 
+                        ?: (gamification["lastLoginDate"] as? Number)?.toLong()
+                        ?: System.currentTimeMillis()
+                )
+            )
+        } else {
+            Log.w("Leaderboard", "No gamification data for user: $uid")
+        }
+    }
+    
+    Log.d("Leaderboard", "Total entries created: ${entries.size}")
+    
+    return entries
+}
+📈 Leaderboard Generation Logic
+Step 2: Generate Different Leaderboards
+data class LeaderboardsData(
+    val global: List<LeaderboardEntry>,
+    val weekly: List<LeaderboardEntry>,
+    val streak: List<LeaderboardEntry>,
+    val accuracy: List<LeaderboardEntry>,
+    val testMasters: List<LeaderboardEntry>,
+    val levelRanking: List<LeaderboardEntry>
+)
+fun generateLeaderboards(allEntries: List<LeaderboardEntry>): LeaderboardsData {
+    return LeaderboardsData(
+        // 1. Global Leaderboard - Sort by points
+        global = allEntries
+            .sortedByDescending { it.points }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) },
+        
+        // 2. Weekly Leaderboard - Active in last 7 days
+        weekly = allEntries
+            .filter { entry ->
+                val weekAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
+                entry.lastActive >= weekAgo
+            }
+            .sortedByDescending { it.points }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) },
+        
+        // 3. Streak Leaderboard - Sort by current streak
+        streak = allEntries
+            .sortedByDescending { it.currentStreak }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) },
+        
+        // 4. Accuracy Leaderboard - Min 5 tests, sort by average score
+        accuracy = allEntries
+            .filter { it.totalTests >= 5 }
+            .sortedByDescending { it.averageScore }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) },
+        
+        // 5. Test Masters - Sort by total tests
+        testMasters = allEntries
+            .sortedByDescending { it.totalTests }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) },
+        
+        // 6. Level Ranking - Sort by level
+        levelRanking = allEntries
+            .sortedByDescending { it.level }
+            .take(50)
+            .mapIndexed { index, entry -> entry.copy(rank = index + 1) }
+    )
+}
+🎨 UI Implementation
+RecyclerView Adapter
+class LeaderboardAdapter(
+    private val currentUserId: String?,
+    private val metricType: MetricType
+) : RecyclerView.Adapter<LeaderboardAdapter.ViewHolder>() {
+    
+    enum class MetricType {
+        POINTS, STREAK, ACCURACY, TESTS, LEVEL
+    }
+    
+    private var entries = listOf<LeaderboardEntry>()
+    
+    fun submitList(newEntries: List<LeaderboardEntry>) {
+        entries = newEntries
+        notifyDataSetChanged()
+    }
+    
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemLeaderboardEntryBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return ViewHolder(binding)
+    }
+    
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(entries[position])
+    }
+    
+    override fun getItemCount() = entries.size
+    
+    inner class ViewHolder(
+        private val binding: ItemLeaderboardEntryBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        
+        fun bind(entry: LeaderboardEntry) {
+            val isCurrentUser = entry.userId == currentUserId
+            
+            // Set background for current user
+            if (isCurrentUser) {
+                binding.root.setBackgroundResource(R.drawable.bg_current_user_entry)
+            } else {
+                binding.root.setBackgroundResource(R.drawable.bg_leaderboard_entry)
+            }
+            
+            // Rank icon and badge
+            binding.rankIcon.setImageResource(getRankIcon(entry.rank))
+            binding.rankBadge.text = "#${entry.rank}"
+            binding.rankBadge.setBackgroundResource(getRankBadgeBackground(entry.rank))
+            
+            // User info
+            binding.displayName.text = entry.displayName
+            binding.level.text = "Level ${entry.level}"
+            binding.totalTests.text = "${entry.totalTests} tests"
+            binding.averageScore.text = "${entry.averageScore.toInt()}% avg"
+            
+            // Streak indicator
+            if (entry.currentStreak > 0) {
+                binding.streakIndicator.visibility = View.VISIBLE
+                binding.streakIndicator.text = "${entry.currentStreak}🔥"
+            } else {
+                binding.streakIndicator.visibility = View.GONE
+            }
+            
+            // Current user badge
+            binding.youBadge.visibility = if (isCurrentUser) View.VISIBLE else View.GONE
+            
+            // Champion badge for rank 1
+            binding.championBadge.visibility = if (entry.rank == 1) View.VISIBLE else View.GONE
+            
+            // Metric value (right side)
+            val (metricValue, metricLabel) = getMetricDisplay(entry)
+            binding.metricValue.text = metricValue
+            binding.metricLabel.text = metricLabel
+            
+            // Avatar
+            Glide.with(binding.avatar)
+                .load(entry.avatar)
+                .placeholder(R.drawable.ic_default_avatar)
+                .circleCrop()
+                .into(binding.avatar)
+        }
+        
+        private fun getMetricDisplay(entry: LeaderboardEntry): Pair<String, String> {
+            return when (metricType) {
+                MetricType.POINTS -> entry.points.toString() to "points"
+                MetricType.STREAK -> entry.currentStreak.toString() to "days"
+                MetricType.ACCURACY -> "${entry.averageScore.toInt()}%" to "accuracy"
+                MetricType.TESTS -> entry.totalTests.toString() to "tests"
+                MetricType.LEVEL -> entry.level.toString() to "level"
+            }
+        }
+        
+        private fun getRankIcon(rank: Int): Int {
+            return when {
+                rank == 1 -> R.drawable.ic_crown_gold
+                rank == 2 -> R.drawable.ic_medal_silver
+                rank == 3 -> R.drawable.ic_medal_bronze
+                rank <= 10 -> R.drawable.ic_trophy_blue
+                rank <= 50 -> R.drawable.ic_star_purple
+                else -> R.drawable.ic_user_default
+            }
+        }
+        
+        private fun getRankBadgeBackground(rank: Int): Int {
+            return when {
+                rank == 1 -> R.drawable.bg_rank_gold
+                rank == 2 -> R.drawable.bg_rank_silver
+                rank == 3 -> R.drawable.bg_rank_bronze
+                rank <= 10 -> R.drawable.bg_rank_blue
+                rank <= 50 -> R.drawable.bg_rank_purple
+                else -> R.drawable.bg_rank_default
+            }
+        }
+    }
+}
+🎨 XML Layout
+item_leaderboard_entry.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+        
+        <!-- Rank Icon -->
+        <ImageView
+            android:id="@+id/rankIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/ic_crown_gold" />
+        
+        <!-- Rank Badge -->
+        <TextView
+            android:id="@+id/rankBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/rankIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="#1" />
+        
+        <!-- Avatar -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/avatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:strokeWidth="2dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:layout_constraintStart_toEndOf="@id/rankBadge"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/ic_default_avatar" />
+        
+        <!-- User Info Container -->
+        <LinearLayout
+            android:id="@+id/userInfoContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintEnd_toStartOf="@id/metricContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            
+            <!-- Name and Badges Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                
+                <TextView
+                    android:id="@+id/displayName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    tools:text="John Doe" />
+                
+                <TextView
+                    android:id="@+id/youBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="You"
+                    android:textSize="10sp"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_you_badge"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:visibility="gone" />
+                
+                <TextView
+                    android:id="@+id/championBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="👑 Champion"
+                    android:textSize="10sp"
+                    android:background="@drawable/bg_champion_badge"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+            
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+                
+                <TextView
+                    android:id="@+id/level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"
+                    android:drawablePadding="4dp"
+                    app:drawableStartCompat="@drawable/ic_award"
+                    app:drawableTint="?android:textColorSecondary"
+                    tools:text="Level 8" />
+                
+                <TextView
+                    android:id="@+id/totalTests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"
+                    android:drawablePadding="4dp"
+                    app:drawableStartCompat="@drawable/ic_brain"
+                    app:drawableTint="?android:textColorSecondary"
+                    tools:text="25 tests" />
+                
+                <TextView
+                    android:id="@+id/averageScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"
+                    android:drawablePadding="4dp"
+                    app:drawableStartCompat="@drawable/ic_target"
+                    app:drawableTint="?android:textColorSecondary"
+                    tools:text="87% avg" />
+                
+                <TextView
+                    android:id="@+id/streakIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textSize="12sp"
+                    android:textColor="#FF6B35"
+                    android:drawablePadding="4dp"
+                    app:drawableStartCompat="@drawable/ic_zap"
+                    app:drawableTint="#FF6B35"
+                    android:visibility="gone"
+                    tools:text="5🔥"
+                    tools:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+        
+        <!-- Metric Value (Right Side) -->
+        <LinearLayout
+            android:id="@+id/metricContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            
+            <TextView
+                android:id="@+id/metricValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="?attr/colorPrimary"
+                tools:text="1,250" />
+            
+            <TextView
+                android:id="@+id/metricLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="?android:textColorSecondary"
+                tools:text="points" />
+        </LinearLayout>
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
+🎨 Drawable Resources
+bg_rank_gold.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#FFD700"
+        android:endColor="#FFA500"
+        android:angle="135" />
+    <corners android:radius="8dp" />
+</shape>
+bg_rank_silver.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#C0C0C0"
+        android:endColor="#808080"
+        android:angle="135" />
+    <corners android:radius="8dp" />
+</shape>
+bg_rank_bronze.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#CD7F32"
+        android:endColor="#8B4513"
+        android:angle="135" />
+    <corners android:radius="8dp" />
+</shape>
+bg_current_user_entry.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#E3F2FD" />
+    <stroke 
+        android:width="2dp"
+        android:color="?attr/colorPrimary" />
+    <corners android:radius="12dp" />
+</shape>
+📱 Fragment/Activity Implementation
+LeaderboardFragment.kt
+class LeaderboardFragment : Fragment() {
+    
+    private var _binding: FragmentLeaderboardBinding? = null
+    private val binding get() = _binding!!
+    
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+    
+    private val adapters = mutableMapOf<Int, LeaderboardAdapter>()
+    private var allEntries = listOf<LeaderboardEntry>()
+    private var leaderboardsData: LeaderboardsData? = null
+    
+    companion object {
+        private const val TAG = "LeaderboardFragment"
+    }
+    
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+    
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        setupViewPager()
+        setupTabLayout()
+        setupSearchView()
+        setupRefreshButton()
+        
+        loadLeaderboards()
+    }
+    
+    private fun setupViewPager() {
+        viewPager = binding.viewPager
+        val pagerAdapter = LeaderboardPagerAdapter(this)
+        viewPager.adapter = pagerAdapter
+    }
+    
+    private fun setupTabLayout() {
+        tabLayout = binding.tabLayout
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Global"
+                1 -> "Weekly"
+                2 -> "Streak"
+                3 -> "Accuracy"
+                4 -> "Tests"
+                5 -> "Level"
+                else -> ""
+            }
+            tab.icon = when (position) {
+                0 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_trophy)
+                1 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_calendar)
+                2 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_zap)
+                3 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_target)
+                4 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_brain)
+                5 -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_award)
+                else -> null
+            }
+        }.attach()
+    }
+    
+    private fun setupSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterLeaderboards(query ?: "")
+                return true
+            }
+            
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterLeaderboards(newText ?: "")
+                return true
+            }
+        })
+    }
+    
+    private fun setupRefreshButton() {
+        binding.refreshButton.setOnClickListener {
+            loadLeaderboards()
+        }
+    }
+    
+    private fun loadLeaderboards() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.errorView.visibility = View.GONE
+        
+        lifecycleScope.launch {
+            try {
+                Log.d(TAG, "Starting to fetch leaderboard data...")
+                allEntries = fetchLeaderboardData()
+                
+                Log.d(TAG, "Fetched ${allEntries.size} total entries")
+                allEntries.take(5).forEach { entry ->
+                    Log.d(TAG, "Entry: ${entry.displayName} (${entry.userId}) - ${entry.points} points")
+                }
+                
+                if (allEntries.isEmpty()) {
+                    Log.w(TAG, "No leaderboard entries found!")
+                    binding.progressBar.visibility = View.GONE
+                    binding.errorView.visibility = View.VISIBLE
+                    binding.errorText.text = "No leaderboard data available. Start taking tests!"
+                    return@launch
+                }
+                
+                leaderboardsData = generateLeaderboards(allEntries)
+                
+                Log.d(TAG, "Generated leaderboards - Global: ${leaderboardsData?.global?.size}")
+                
+                updateAllAdapters()
+                updateCurrentUserStats()
+                
+                binding.progressBar.visibility = View.GONE
+                
+                Toast.makeText(
+                    requireContext(),
+                    "Loaded ${allEntries.size} students",
+                    Toast.LENGTH_SHORT
+                ).show()
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load leaderboards", e)
+                binding.progressBar.visibility = View.GONE
+                binding.errorView.visibility = View.VISIBLE
+                binding.errorText.text = "Failed to load leaderboards: ${e.message}"
+                
+                Toast.makeText(
+                    requireContext(),
+                    "Error: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+    
+    private fun filterLeaderboards(query: String) {
+        val filtered = if (query.isBlank()) {
+            allEntries
+        } else {
+            allEntries.filter {
+                it.displayName.contains(query, ignoreCase = true) ||
+                it.email?.contains(query, ignoreCase = true) == true
+            }
+        }
+        
+        leaderboardsData = generateLeaderboards(filtered)
+        updateAllAdapters()
+    }
+    
+    private fun updateAllAdapters() {
+        leaderboardsData?.let { data ->
+            adapters[0]?.submitList(data.global)
+            adapters[1]?.submitList(data.weekly)
+            adapters[2]?.submitList(data.streak)
+            adapters[3]?.submitList(data.accuracy)
+            adapters[4]?.submitList(data.testMasters)
+            adapters[5]?.submitList(data.levelRanking)
+        }
+    }
+    
+    private fun updateCurrentUserStats() {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        leaderboardsData?.let { data ->
+            val globalEntry = data.global.find { it.userId == currentUserId }
+            val streakEntry = data.streak.find { it.userId == currentUserId }
+            val accuracyEntry = data.accuracy.find { it.userId == currentUserId }
+            
+            globalEntry?.let {
+                binding.globalRank.text = "#${it.rank}"
+                binding.globalPoints.text = it.points.toString()
+            }
+            
+            streakEntry?.let {
+                binding.streakRank.text = "#${it.rank}"
+                binding.streakDays.text = "${it.currentStreak}🔥"
+            }
+            
+            accuracyEntry?.let {
+                binding.accuracyRank.text = "#${it.rank}"
+                binding.accuracyPercent.text = "${it.averageScore.toInt()}%"
+            }
+        }
+    }
+    
+    inner class LeaderboardPagerAdapter(fragment: Fragment) : 
+        FragmentStateAdapter(fragment) {
+        
+        override fun getItemCount() = 6
+        
+        override fun createFragment(position: Int): Fragment {
+            val metricType = when (position) {
+                0 -> LeaderboardAdapter.MetricType.POINTS
+                1 -> LeaderboardAdapter.MetricType.POINTS
+                2 -> LeaderboardAdapter.MetricType.STREAK
+                3 -> LeaderboardAdapter.MetricType.ACCURACY
+                4 -> LeaderboardAdapter.MetricType.TESTS
+                5 -> LeaderboardAdapter.MetricType.LEVEL
+                else -> LeaderboardAdapter.MetricType.POINTS
+            }
+            
+            return LeaderboardListFragment.newInstance(position, metricType)
+        }
+    }
+    
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+🔍 Search Functionality
+fun filterLeaderboardEntries(
+    entries: List<LeaderboardEntry>,
+    query: String
+): List<LeaderboardEntry> {
+    if (query.isBlank()) return entries
+    
+    val lowerQuery = query.lowercase()
+    return entries.filter { entry ->
+        entry.displayName.lowercase().contains(lowerQuery) ||
+        entry.email?.lowercase()?.contains(lowerQuery) == true
+    }
+}
+🎯 Current User Highlighting
+fun highlightCurrentUser(
+    recyclerView: RecyclerView,
+    currentUserId: String?,
+    entries: List<LeaderboardEntry>
+) {
+    if (currentUserId == null) return
+    
+    val position = entries.indexOfFirst { it.userId == currentUserId }
+    if (position != -1) {
+        recyclerView.post {
+            recyclerView.smoothScrollToPosition(position)
+        }
+    }
+}
+📊 Summary
+Implementation Checklist
+ Create 
+
+LeaderboardEntry
+ data class
+ Implement fetchLeaderboardData() function
+ Implement generateLeaderboards() function
+ Create LeaderboardAdapter with ViewHolder
+ Design item_leaderboard_entry.xml layout
+ Create rank badge drawables (gold, silver, bronze, etc.)
+ Implement LeaderboardFragment with ViewPager2
+ Add TabLayout with 6 tabs
+ Implement search functionality
+ Add refresh button
+ Display current user stats cards
+ Add empty state views
+ Implement error handling
+ Add loading indicators
+ Test with different data scenario
