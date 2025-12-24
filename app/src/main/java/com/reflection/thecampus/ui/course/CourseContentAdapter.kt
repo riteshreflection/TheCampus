@@ -77,7 +77,7 @@ class CourseContentAdapter(
                 binding.ivTreeLines.setImageResource(drawableRes)
             }
 
-            // Lock state
+            // Lock state - content is locked only if user is NOT enrolled AND content is NOT public
             val isLocked = !isEnrolled && !item.isPublic
             binding.ivLock.visibility = if (isLocked) View.VISIBLE else View.GONE
             binding.tvFolderName.alpha = if (isLocked) 0.6f else 1.0f
@@ -88,9 +88,12 @@ class CourseContentAdapter(
                 binding.ivArrow.visibility = View.VISIBLE
                 
                 binding.headerLayout.setOnClickListener {
+                    // Allow expansion if user is enrolled OR content is public
                     if (isLocked) {
+                        // Show toast for locked content
                         onFolderClick(item)
                     } else {
+                        // Allow expansion for enrolled users or public content
                         toggleExpansion()
                     }
                 }
@@ -123,11 +126,12 @@ class CourseContentAdapter(
                 binding.ivTreeLines.setImageResource(drawableRes)
             }
 
-            // Lock state
+            // Lock state - content is locked only if user is NOT enrolled AND content is NOT public
             val isLocked = !isEnrolled && !item.isPublic
             binding.ivLock.visibility = if (isLocked) View.VISIBLE else View.GONE
             binding.tvFileName.alpha = if (isLocked) 0.6f else 1.0f
 
+            // Allow file click - the fragment will handle access control
             binding.root.setOnClickListener {
                 onFileClick(item)
             }

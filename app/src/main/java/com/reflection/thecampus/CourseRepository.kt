@@ -189,11 +189,14 @@ class CourseRepository(context: Context) {
                         val course = courseSnapshot.getValue(Course::class.java)
                         if (course != null) {
                             val courseWithId = course.copy(id = courseSnapshot.key ?: "")
-                            courses.add(courseWithId)
+                            // Only include published courses in Discover
+                            if (courseWithId.status == "published") {
+                                courses.add(courseWithId)
+                            }
                         }
                     }
 
-                    // Update cache
+                    // Update cache (only with published courses)
                     val entities = courses.map { it.toEntity(isEnrolled = false) }
                     courseDao.insertCourses(entities)
 
@@ -222,15 +225,18 @@ class CourseRepository(context: Context) {
                 val course = courseSnapshot.getValue(Course::class.java)
                 if (course != null) {
                     val courseWithId = course.copy(id = courseSnapshot.key ?: "")
-                    courses.add(courseWithId)
+                    // Only include published courses
+                    if (courseWithId.status == "published") {
+                        courses.add(courseWithId)
+                    }
                 }
             }
 
-            // Update Room cache
+            // Update Room cache (only with published courses)
             val entities = courses.map { it.toEntity(isEnrolled = false) }
             courseDao.insertCourses(entities)
 
-            Timber.d("Refreshed ${courses.size} courses from Firebase")
+            Timber.d("Refreshed ${courses.size} published courses from Firebase")
         } catch (e: Exception) {
             Timber.e(e, "Error refreshing courses")
             throw e
