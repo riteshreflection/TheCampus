@@ -38,10 +38,24 @@ class SignupActivity : AppCompatActivity() {
         val etName = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etName)
         val etEmail = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etEmail)
         val etPassword = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPassword)
+        val tilName = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilName)
+        val tilEmail = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilEmail)
+        val tilPassword = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilPassword)
         etReferralCode = findViewById(R.id.etReferralCode)
         btnSignup = findViewById(R.id.btnSignup)
         progressBar = findViewById(R.id.progressBar)
         val tvLogin = findViewById<android.widget.TextView>(R.id.tvLogin)
+
+        // Clear errors when user types
+        etName.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) tilName.error = null
+        }
+        etEmail.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) tilEmail.error = null
+        }
+        etPassword.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) tilPassword.error = null
+        }
 
         // Handle Deep Link
         val data: android.net.Uri? = intent.data
@@ -50,15 +64,38 @@ class SignupActivity : AppCompatActivity() {
         }
 
         btnSignup.setOnClickListener {
+            // Clear previous errors
+            tilName.error = null
+            tilEmail.error = null
+            tilPassword.error = null
+
             val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
             val referralCode = etReferralCode.text.toString().trim()
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            // Validate inputs
+            var hasError = false
+
+            if (name.isEmpty()) {
+                tilName.error = "Name is required"
+                hasError = true
             }
+
+            if (email.isEmpty()) {
+                tilEmail.error = "Email is required"
+                hasError = true
+            }
+
+            if (password.isEmpty()) {
+                tilPassword.error = "Password is required"
+                hasError = true
+            } else if (password.length < 6) {
+                tilPassword.error = "Password must be at least 6 characters"
+                hasError = true
+            }
+
+            if (hasError) return@setOnClickListener
 
             setLoading(true)
 
@@ -84,7 +121,16 @@ class SignupActivity : AppCompatActivity() {
                         }
                     } else {
                         setLoading(false)
-                        Toast.makeText(this, "Signup Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        // Show user-friendly error message
+                        val errorMessage = com.reflection.thecampus.utils.AuthErrorHandler.getErrorMessage(task.exception)
+                        
+                        // Determine which field to show error on
+                        val message = task.exception?.message?.lowercase() ?: ""
+                        when {
+                            message.contains("password") -> tilPassword.error = errorMessage
+                            message.contains("email") -> tilEmail.error = errorMessage
+                            else -> tilEmail.error = errorMessage // Default to email field
+                        }
                     }
                 }
         }

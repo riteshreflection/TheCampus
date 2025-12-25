@@ -85,6 +85,8 @@ class CourseAdapter(
             holder.btnEnroll.backgroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(context, R.color.colorSuccess)
             )
+            // White text on green background
+            holder.btnEnroll.setTextColor(ContextCompat.getColor(context, R.color.white))
         } else {
             // Show pricing, hide progress
             holder.layoutPricing.visibility = View.VISIBLE
@@ -108,9 +110,14 @@ class CourseAdapter(
 
             // Update button for non-enrolled courses
             holder.btnEnroll.text = "+ Enroll Now"
-            holder.btnEnroll.backgroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(context, R.color.colorPrimary)
-            )
+            
+            // Get theme attribute color for button background
+            val typedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+            holder.btnEnroll.backgroundTintList = ColorStateList.valueOf(typedValue.data)
+            
+            // Set white text color for better contrast on primary color button
+            holder.btnEnroll.setTextColor(ContextCompat.getColor(context, R.color.white))
         }
 
         holder.btnEnroll.setOnClickListener {

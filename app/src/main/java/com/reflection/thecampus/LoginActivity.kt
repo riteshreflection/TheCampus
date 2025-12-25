@@ -56,6 +56,8 @@ class LoginActivity : AppCompatActivity() {
 
         val etEmail = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etEmail)
         val etPassword = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPassword)
+        val tilEmail = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilEmail)
+        val tilPassword = findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilPassword)
         val btnLogin = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLogin)
         val btnGoogleSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnGoogleSignIn)
         val tvSignup = findViewById<TextView>(R.id.tvSignup)
@@ -64,40 +66,71 @@ class LoginActivity : AppCompatActivity() {
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
         val progressBar = findViewById<android.widget.ProgressBar>(R.id.progressBar)
 
+        // Clear errors when user types
+        etEmail.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) tilEmail.error = null
+        }
+        etPassword.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) tilPassword.error = null
+        }
+
         btnLogin.setOnClickListener {
-            val email = etEmail.text.toString()
+            // Clear previous errors
+            tilEmail.error = null
+            tilPassword.error = null
+
+            val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                // Show Loading
-                progressBar.visibility = android.view.View.VISIBLE
-                btnLogin.text = ""
-                btnLogin.isEnabled = false
+            // Validate inputs
+            var hasError = false
+            
+            if (email.isEmpty()) {
+                tilEmail.error = "Email is required"
+                hasError = true
+            }
+            
+            if (password.isEmpty()) {
+                tilPassword.error = "Password is required"
+                hasError = true
+            }
+            
+            if (hasError) return@setOnClickListener
 
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                            // Create Session
-                            com.reflection.thecampus.utils.SessionManager.createSession(this, auth.currentUser!!.uid)
-                            
-                            // Save FCM Token
-                            com.reflection.thecampus.utils.FCMManager.saveToken(this, auth.currentUser!!.uid)
-                            
-                            startActivity(Intent(this, MainActivity::class.java))
-                            finish()
-                        } else {
-                            // Hide Loading
-                            progressBar.visibility = android.view.View.GONE
-                            btnLogin.text = getString(R.string.login_button)
-                            btnLogin.isEnabled = true
-                            
-                            Toast.makeText(this, "Login Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            // Show Loading
+            progressBar.visibility = android.view.View.VISIBLE
+            btnLogin.text = ""
+            btnLogin.isEnabled = false
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    // Hide Loading
+                    progressBar.visibility = android.view.View.GONE
+                    btnLogin.text = getString(R.string.login_button)
+                    btnLogin.isEnabled = true
+
+                    if (task.isSuccessful) {
+                        // Create Session
+                        com.reflection.thecampus.utils.SessionManager.createSession(this, auth.currentUser!!.uid)
+                        
+                        // Save FCM Token
+                        com.reflection.thecampus.utils.FCMManager.saveToken(this, auth.currentUser!!.uid)
+                        
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        // Show user-friendly error message
+                        val errorMessage = com.reflection.thecampus.utils.AuthErrorHandler.getErrorMessage(task.exception)
+                        
+                        // Determine which field to show error on
+                        val message = task.exception?.message?.lowercase() ?: ""
+                        when {
+                            message.contains("password") -> tilPassword.error = errorMessage
+                            message.contains("email") || message.contains("user") -> tilEmail.error = errorMessage
+                            else -> tilPassword.error = errorMessage // Default to password field
                         }
                     }
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            }
+                }
         }
 
         btnGoogleSignIn.setOnClickListener {
@@ -124,7 +157,12 @@ class LoginActivity : AppCompatActivity() {
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
             Log.w("LoginActivity", "Google sign in failed", e)
-            Toast.makeText(this, "Google Sign-In failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            val errorMessage = when (e.statusCode) {
+                12501 -> "Sign-in cancelled. Please try again."
+                12500 -> "Google Sign-In is not configured properly. Please contact support."
+                else -> "Unable to sign in with Google. Please try again or use email/password."
+            }
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -169,13 +207,14 @@ class LoginActivity : AppCompatActivity() {
                             override fun onCancelled(error: DatabaseError) {
                                 progressBar.visibility = android.view.View.GONE
                                 btnGoogleSignIn.isEnabled = true
-                                Toast.makeText(this@LoginActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "Unable to create your profile. Please try again.", Toast.LENGTH_LONG).show()
                             }
                         })
                 } else {
                     progressBar.visibility = android.view.View.GONE
                     btnGoogleSignIn.isEnabled = true
-                    Toast.makeText(this, "Authentication Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    val errorMessage = com.reflection.thecampus.utils.AuthErrorHandler.getErrorMessage(task.exception)
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
     }

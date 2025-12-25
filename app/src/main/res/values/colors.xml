@@ -20,7 +20,7 @@
     <color name="aqua_link">#00CED1</color>
 
     <!-- Light Theme Colors -->
-    <color name="md_theme_light_primary">#6200EE</color>
+    <color name="md_theme_light_primary">#000000</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_secondary">#03DAC5</color>
     <color name="md_theme_light_onSecondary">#000000</color>
@@ -30,7 +30,7 @@
     <color name="md_theme_light_onSurface">#000000</color>
 
     <!-- Dark Theme Colors -->
-    <color name="md_theme_dark_primary">#BB86FC</color>
+    <color name="md_theme_dark_primary">#FFFFFF</color>
     <color name="md_theme_dark_onPrimary">#000000</color>
     <color name="md_theme_dark_secondary">#03DAC5</color>
     <color name="md_theme_dark_onSecondary">#000000</color>
