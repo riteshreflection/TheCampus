@@ -17,9 +17,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         enableEdgeToEdge()
-        // Navigate to LoginActivity after 2 seconds
+        // Navigate to MainActivity after 1.5 seconds
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }, 1500)

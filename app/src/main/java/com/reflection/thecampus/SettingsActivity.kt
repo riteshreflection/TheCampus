@@ -84,18 +84,6 @@ class SettingsActivity : AppCompatActivity() {
             ).show()
         }
 
-        // Theme Color Click
-        val btnThemeColor = findViewById<View>(R.id.btnThemeColor)
-        val tvCurrentTheme = findViewById<TextView>(R.id.tvCurrentTheme)
-        
-        // Display current theme
-        val currentTheme = com.reflection.thecampus.utils.ThemeManager.getCurrentTheme(this)
-        tvCurrentTheme.text = currentTheme.themeName
-        
-        btnThemeColor.setOnClickListener {
-            showThemePickerDialog()
-        }
-
         val profileCard = findViewById<CardView>(R.id.profileCard)
         profileCard?.setOnClickListener {
             openEditProfile()
@@ -186,41 +174,6 @@ class SettingsActivity : AppCompatActivity() {
     private fun openEditProfile() {
         val intent = Intent(this, EditProfileActivity::class.java)
         startActivityForResult(intent, REQUEST_EDIT_PROFILE)
-    }
-    
-    private fun showThemePickerDialog() {
-        val dialog = com.reflection.thecampus.ui.dialogs.ThemePickerDialog.newInstance()
-        dialog.setOnThemeSelectedListener { selectedTheme ->
-            // Save the selected theme
-            com.reflection.thecampus.utils.ThemeManager.saveTheme(this, selectedTheme)
-            
-            // Update the current theme display
-            findViewById<TextView>(R.id.tvCurrentTheme).text = selectedTheme.themeName
-            
-            // Show restart dialog
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Theme Changed")
-                .setMessage("The app needs to restart to apply the new theme color. Restart now?")
-                .setPositiveButton("Restart") { _, _ ->
-                    // Restart the app
-                    val intent = packageManager.getLaunchIntentForPackage(packageName)
-                    intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
-                    Runtime.getRuntime().exit(0)
-                }
-                .setNegativeButton("Later") { _, _ ->
-                    // User chose to restart later, show a toast
-                    android.widget.Toast.makeText(
-                        this,
-                        "Theme will be applied on next app restart",
-                        android.widget.Toast.LENGTH_LONG
-                    ).show()
-                }
-                .show()
-        }
-        dialog.show(supportFragmentManager, com.reflection.thecampus.ui.dialogs.ThemePickerDialog.TAG)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

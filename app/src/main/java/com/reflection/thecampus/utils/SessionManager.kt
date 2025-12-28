@@ -67,10 +67,9 @@ object SessionManager {
 
         if (localSessionId == null) {
             // No local session but user is logged in. This might be a fresh install or cleared data.
-            // We should probably logout or create a new session. 
-            // For security, let's logout.
-            logout(context, "Session expired. Please login again.")
-            onSessionValid(false)
+            // Create a new session instead of logging out
+            createSession(context, currentUser.uid)
+            onSessionValid(true)
             return
         }
 

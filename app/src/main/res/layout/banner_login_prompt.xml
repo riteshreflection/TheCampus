@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/loginPromptBanner"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_golden_sparkle"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    android:elevation="12dp"
+    android:visibility="gone">
+
+    <!-- Sparkle 1 (Left) -->
+    <ImageView
+        android:id="@+id/sparkle1"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_sparkle_gold"
+        android:alpha="0.9"
+        android:contentDescription="Sparkle"/>
+
+    <!-- Crown Icon -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="👑"
+        android:textSize="22sp"
+        android:layout_marginStart="10dp"/>
+
+    <!-- Login Message -->
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Unlock Premium Features"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginStart="10dp"
+        android:shadowColor="#80000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="3"/>
+
+    <!-- Sparkle 2 (Middle) -->
+    <ImageView
+        android:id="@+id/sparkle2"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:src="@drawable/ic_sparkle_gold"
+        android:alpha="0.7"
+        android:layout_marginEnd="10dp"
+        android:contentDescription="Sparkle"/>
+
+    <!-- Login Button (Black with White Text) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLoginPrompt"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:text="Login"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:backgroundTint="#000000"
+        app:cornerRadius="21dp"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:elevation="6dp"
+        app:rippleColor="#FFFFFF"
+        style="@style/Widget.MaterialComponents.Button"/>
+
+    <!-- Sparkle 3 (Right) -->
+    <ImageView
+        android:id="@+id/sparkle3"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:src="@drawable/ic_sparkle_gold"
+        android:alpha="1.0"
+        android:layout_marginStart="10dp"
+        android:contentDescription="Sparkle"/>
+
+</LinearLayout>

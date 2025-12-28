@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private lateinit var tabLayoutMediator: TabLayoutMediator
+    private lateinit var loginBanner: android.view.View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Apply dynamic theme BEFORE super.onCreate to ensure it takes effect for all attributes
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.view_pager)
         tabLayout = findViewById(R.id.tab_layout)
         
-        // Apply dynamic theme color to tab indicator
+        // Apply primary color (black or white) to tab indicator
         val primaryColor = com.reflection.thecampus.utils.DynamicThemeUtils.getPrimaryColor(this)
         tabLayout.setSelectedTabIndicatorColor(primaryColor)
         
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             if (position == 3) {
                 tab.orCreateBadge.apply {
                     text = "Beta"
-                    backgroundColor = getColor(R.color.colorSaffron)
+                    backgroundColor = getColor(R.color.orange_beta)
                 }
             }
         }
@@ -92,13 +93,9 @@ class MainActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-        
-        // Check Auth Status
-        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            val loginPrompt = LoginPromptBottomSheet()
-            loginPrompt.show(supportFragmentManager, LoginPromptBottomSheet.TAG)
-        }
+
+        // Initialize Premium Login Banner
+        setupLoginBanner()
 
         // Handle Back Press
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
@@ -118,6 +115,48 @@ class MainActivity : AppCompatActivity() {
             }
             .show()
     }
+    
+    private fun setupLoginBanner() {
+        loginBanner = findViewById(R.id.loginPromptBanner)
+        val sparkle1 = loginBanner.findViewById<android.widget.ImageView>(R.id.sparkle1)
+        val sparkle2 = loginBanner.findViewById<android.widget.ImageView>(R.id.sparkle2)
+        val sparkle3 = loginBanner.findViewById<android.widget.ImageView>(R.id.sparkle3)
+        val btnLogin = loginBanner.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLoginPrompt)
+        
+        // Start shimmer animations with different delays for natural effect
+        val shimmerAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.shimmer_shine)
+        sparkle1.startAnimation(shimmerAnim)
+        
+        sparkle2.postDelayed({
+            sparkle2.startAnimation(shimmerAnim)
+        }, 500)
+        
+        sparkle3.postDelayed({
+            sparkle3.startAnimation(shimmerAnim)
+        }, 1000)
+        
+        // Magical click effect for login button
+        btnLogin.setOnTouchListener { view, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    val pressAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.magical_press)
+                    view.startAnimation(pressAnim)
+                    view.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+                }
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                    val releaseAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.magical_release)
+                    view.startAnimation(releaseAnim)
+                }
+            }
+            false // Return false to allow click event to process
+        }
+        
+        // Login button click
+        btnLogin.setOnClickListener {
+            val intent = android.content.Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -133,6 +172,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        
+        // Show/hide premium login banner based on authentication
+        val authUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        loginBanner.visibility = if (authUser == null) android.view.View.VISIBLE else android.view.View.GONE
 
 
         // Request Notification Permission (Android 13+)
@@ -179,7 +222,7 @@ class MainActivity : AppCompatActivity() {
     // Public method to navigate to specific tab
     fun navigateToTab(tabIndex: Int) {
         if (tabIndex in 0..4) {
-            viewPager.setCurrentItem(tabIndex, true)
+            viewPager.currentItem = tabIndex
         }
     }
     

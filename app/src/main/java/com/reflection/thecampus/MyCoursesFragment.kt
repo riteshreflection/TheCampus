@@ -89,11 +89,14 @@ class MyCoursesFragment : Fragment() {
                 emptyState.visibility = View.VISIBLE
                 rvMyCourses.visibility = View.GONE
                 
-                // Browse Courses button
-                emptyState.findViewById<MaterialButton>(R.id.btnBrowseCourses).setOnClickListener {
-                    // Navigate to Explore tab (index 1)
-                    (activity as? MainActivity)?.navigateToTab(1)
+                // Browse Courses button - navigate to Discover tab
+                val browseButton = emptyState.findViewById<MaterialButton>(R.id.btnBrowseCourses)
+                browseButton?.setOnClickListener {
+                    timber.log.Timber.d("Browse Courses button clicked!")
+                    // Navigate to Discover tab (index 0)
+                    (activity as? MainActivity)?.navigateToTab(0)
                 }
+                timber.log.Timber.d("Browse Courses button click listener set")
             } else {
                 timber.log.Timber.d("Showing ${courses.size} courses in RecyclerView")
                 courses.forEachIndexed { index, course ->

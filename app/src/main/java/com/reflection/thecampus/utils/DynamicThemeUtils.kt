@@ -1,90 +1,77 @@
 package com.reflection.thecampus.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import androidx.annotation.ColorInt
-import com.google.android.material.color.MaterialColors
 
 /**
- * Utility to apply dynamic theme colors to activities
+ * Utility to get black/white colors for the current theme mode
  */
 object DynamicThemeUtils {
     
     /**
-     * Apply dynamic theme colors to an activity
-     * Call this in onCreate() after setContentView()
+     * Get the current primary color (Black in light mode, White in dark mode)
      */
-    fun applyDynamicTheme(activity: Activity) {
-        val prefs = activity.getSharedPreferences("theme_runtime", Activity.MODE_PRIVATE)
-        val primaryColor = prefs.getInt("runtime_primary_color", -1)
-        
-        if (primaryColor != -1) {
-            // Apply to window
-            activity.window.statusBarColor = adjustColorBrightness(primaryColor, 0.8f)
-            
-            // The theme colors will be applied through the theme system
-            // Individual views can query the primary color if needed
+    @ColorInt
+    fun getPrimaryColor(context: Context): Int {
+        return if (isDarkMode(context)) {
+            Color.WHITE // #FFFFFF
+        } else {
+            Color.BLACK // #000000
         }
-    }
-    
-    /**
-     * Get the current runtime primary color
-     */
-    @ColorInt
-    fun getPrimaryColor(activity: Activity): Int {
-        val prefs = activity.getSharedPreferences("theme_runtime", Activity.MODE_PRIVATE)
-        return prefs.getInt("runtime_primary_color", 0xFF6200EE.toInt())
-    }
-    
-    /**
-     * Adjust color brightness
-     */
-    @ColorInt
-    private fun adjustColorBrightness(@ColorInt color: Int, factor: Float): Int {
-        val hsv = FloatArray(3)
-        Color.colorToHSV(color, hsv)
-        hsv[2] *= factor
-        return Color.HSVToColor(hsv)
     }
     
     /**
      * Create a ColorStateList for the primary color
      */
-    fun getPrimaryColorStateList(activity: Activity): ColorStateList {
-        val color = getPrimaryColor(activity)
+    fun getPrimaryColorStateList(context: Context): ColorStateList {
+        val color = getPrimaryColor(context)
         return ColorStateList.valueOf(color)
     }
     
     /**
      * Apply primary color to a MaterialButton
      */
-    fun applyToButton(activity: Activity, button: com.google.android.material.button.MaterialButton) {
-        val colorStateList = getPrimaryColorStateList(activity)
+    fun applyToButton(context: Context, button: com.google.android.material.button.MaterialButton) {
+        val colorStateList = getPrimaryColorStateList(context)
         button.backgroundTintList = colorStateList
     }
     
     /**
      * Apply primary color to a FloatingActionButton
      */
-    fun applyToFAB(activity: Activity, fab: com.google.android.material.floatingactionbutton.FloatingActionButton) {
-        val colorStateList = getPrimaryColorStateList(activity)
+    fun applyToFAB(context: Context, fab: com.google.android.material.floatingactionbutton.FloatingActionButton) {
+        val colorStateList = getPrimaryColorStateList(context)
         fab.backgroundTintList = colorStateList
     }
     
     /**
      * Apply primary color to text
      */
-    fun applyToTextView(activity: Activity, textView: android.widget.TextView) {
-        textView.setTextColor(getPrimaryColor(activity))
+    fun applyToTextView(context: Context, textView: android.widget.TextView) {
+        textView.setTextColor(getPrimaryColor(context))
     }
     
     /**
-     * Get a lighter version of the primary color for backgrounds
+     * Get a gray color for secondary elements
      */
     @ColorInt
-    fun getPrimaryColorLight(activity: Activity): Int {
-        val color = getPrimaryColor(activity)
-        return adjustColorBrightness(color, 1.3f)
+    fun getSecondaryColor(context: Context): Int {
+        return if (isDarkMode(context)) {
+            0xFFBDBDBD.toInt() // Gray 300 in dark mode
+        } else {
+            0xFF424242.toInt() // Gray 700 in light mode
+        }
+    }
+    
+    /**
+     * Check if the system is in dark mode
+     */
+    private fun isDarkMode(context: Context): Boolean {
+        val nightModeFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
     }
 }

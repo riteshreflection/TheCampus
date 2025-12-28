@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    
+    <!-- Small sparkle 1 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,8 L9,11 L12,11 L9.5,13 L10.5,16 L8,14 L5.5,16 L6.5,13 L4,11 L7,11 Z"/>
+    
+    <!-- Small sparkle 2 -->
+    <path
+        android:fillColor="#FFFACD"
+        android:pathData="M32,4 L33,6.5 L35.5,6.5 L33.5,8.2 L34.2,10.7 L32,9 L29.8,10.7 L30.5,8.2 L28.5,6.5 L31,6.5 Z"/>
+    
+    <!-- Tiny dot 1 (as path) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,10.5 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    
+    <!-- Small sparkle 3 -->
+    <path
+        android:fillColor="#FFE4B5"
+        android:pathData="M16,32 L17,34.5 L19.5,34.5 L17.5,36.2 L18.2,38.7 L16,37 L13.8,38.7 L14.5,36.2 L12.5,34.5 L15,34.5 Z"/>
+    
+    <!-- Tiny dot 2 (as path) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,27 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"/>
+    
+    <!-- Small sparkle 4 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,48 L49,50.5 L51.5,50.5 L49.5,52.2 L50.2,54.7 L48,53 L45.8,54.7 L46.5,52.2 L44.5,50.5 L47,50.5 Z"/>
+    
+    <!-- Tiny dot 3 (as path) -->
+    <path
+        android:fillColor="#FFFACD"
+        android:pathData="M24,54.5 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    
+    <!-- Tiny dot 4 (as path) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,39 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"/>
+</vector>
+
