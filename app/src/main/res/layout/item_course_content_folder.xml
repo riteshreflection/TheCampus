@@ -17,6 +17,7 @@
         android:layout_marginEnd="-4dp"/>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardFolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -24,7 +25,7 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
         app:cardCornerRadius="12dp"
-        app:cardElevation="3dp"
+        app:cardElevation="4dp"
         app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
@@ -38,7 +39,7 @@
                 android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="64dp"
+                android:minHeight="68dp"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:gravity="center_vertical"
@@ -52,35 +53,60 @@
                     android:src="@drawable/ic_chevron_right"
                     android:contentDescription="Expand/Collapse"
                     app:tint="?attr/colorOnSurface"
-                    android:layout_marginEnd="14dp"/>
+                    android:layout_marginEnd="16dp"/>
 
                 <!-- Folder Icon -->
                 <ImageView
                     android:id="@+id/ivFolderIcon"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_folder"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/folder_svgrepo_com"
                     android:contentDescription="Folder"
                     app:tint="?attr/colorPrimary"
-                    android:layout_marginEnd="14dp"/>
+                    android:layout_marginEnd="16dp"/>
 
-                <!-- Folder Name -->
-                <TextView
-                    android:id="@+id/tvFolderName"
+                <!-- Folder Name and Badge Container -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Folder Name"
-                    android:textSize="17sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textStyle="bold"
-                    android:lineSpacingExtra="2dp"/>
+                    android:orientation="vertical">
+
+                    <!-- Folder Name -->
+                    <TextView
+                        android:id="@+id/tvFolderName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Folder Name"
+                        android:textSize="16sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold"
+                        android:lineSpacingExtra="2dp"/>
+
+                    <!-- FREE Badge -->
+                    <TextView
+                        android:id="@+id/tvFreeBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FREE"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:background="@drawable/bg_golden_gradient"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_marginTop="4dp"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
 
                 <!-- Lock Icon (visible if locked) -->
                 <ImageView
                     android:id="@+id/ivLock"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_lock_closed"
                     android:contentDescription="Locked"
                     app:tint="?attr/colorOnSurface"

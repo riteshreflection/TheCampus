@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="@drawable/bg_checkout_premium">
 
     <!-- AppBar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -21,6 +22,13 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Particle Animation Overlay -->
+    <com.reflection.thecampus.ui.views.ParticleAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"/>
+
     <!-- Main Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -31,15 +39,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
 
             <!-- Course Details Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="?attr/colorSurface">
 
                 <LinearLayout
@@ -58,14 +69,15 @@
                         android:layout_marginBottom="12dp"/>
 
                     <!-- Course Thumbnail -->
-                    <ImageView
+                    <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/ivCourseThumbnail"
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
                         android:scaleType="centerCrop"
                         android:background="@color/colorDivider"
                         android:layout_marginBottom="12dp"
-                        android:contentDescription="Course Thumbnail"/>
+                        android:contentDescription="Course Thumbnail"
+                        app:shapeAppearanceOverlay="@style/RoundedImageView"/>
 
                     <!-- Course Name -->
                     <TextView
@@ -147,9 +159,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="?attr/colorSurface">
 
                 <LinearLayout
@@ -264,9 +276,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="?attr/colorSurface">
 
                 <LinearLayout
@@ -424,14 +436,17 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_tag"
+                        android:backgroundTint="#FFF8E1"
+                        android:padding="12dp">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total Amount"
-                            android:textSize="16sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="?attr/colorOnSurface"/>
 
@@ -440,9 +455,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="₹13,499"
-                            android:textSize="20sp"
+                            android:textSize="24sp"
                             android:textStyle="bold"
-                            android:textColor="?attr/colorPrimary"/>
+                            android:textColor="#FFB700"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -452,9 +467,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="?attr/colorSurface">
 
                 <LinearLayout
@@ -472,23 +487,28 @@
                         android:textColor="?attr/colorOnSurface"
                         android:layout_marginBottom="12dp"/>
 
-                    <!-- Payment Policy Checkbox -->
-                    <CheckBox
-                        android:id="@+id/cbPaymentPolicy"
+                    <!-- Policy Checkbox with separate clickable text -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="8dp"/>
-
-                    <!-- Refund Policy Checkbox -->
-                    <CheckBox
-                        android:id="@+id/cbRefundPolicy"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="8dp"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <CheckBox
+                            android:id="@+id/cbPolicies"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"/>
+                        
+                        <TextView
+                            android:id="@+id/tvPolicyText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="I accept the Payment Policy and Refund Policy"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </LinearLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -497,12 +517,21 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnProceedToPayment"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="68dp"
                 android:text="Proceed to Payment"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
+                android:textColor="@color/payment_button_text_color"
+                android:textAllCaps="false"
                 android:enabled="false"
-                app:cornerRadius="12dp"
+                android:background="@drawable/bg_payment_button_premium"
+                app:backgroundTint="@null"
+                app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="end"
+                app:iconTint="@color/payment_button_text_color"
+                app:cornerRadius="16dp"
+                app:strokeWidth="0dp"
+                app:rippleColor="#40FFD700"
                 android:layout_marginBottom="16dp"/>
 
         </LinearLayout>

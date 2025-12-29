@@ -33,10 +33,6 @@ class CourseOverviewFragment : Fragment() {
         
         course?.let { displayCourseInfo(view, it) }
         
-        // Hide pricing card if enrolled
-        val cardPricing = view.findViewById<CardView>(R.id.cardPricing)
-        cardPricing.visibility = if (isEnrolled) View.GONE else View.VISIBLE
-        
         // Setup stats card with conditional visibility
         setupStatsCard(view)
         
@@ -84,22 +80,7 @@ class CourseOverviewFragment : Fragment() {
         view.findViewById<TextView>(R.id.tvCourseTitle).text = course.basicInfo.name
         view.findViewById<TextView>(R.id.tvDescription).text = course.basicInfo.description
         
-        // Pricing
-        val originalPrice = course.pricing.price
-        val discount = course.pricing.discount
-        val discountedPrice = originalPrice - (originalPrice * discount / 100)
-
-        view.findViewById<TextView>(R.id.tvDiscountedPrice).text = "₹${discountedPrice.toInt()}"
-        view.findViewById<TextView>(R.id.tvOriginalPrice).text = "₹${originalPrice.toInt()}"
-        view.findViewById<TextView>(R.id.tvOriginalPrice).paintFlags = 
-            view.findViewById<TextView>(R.id.tvOriginalPrice).paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-
-        if (discount > 0) {
-            view.findViewById<TextView>(R.id.tvDiscount).text = "${discount}% OFF"
-            view.findViewById<TextView>(R.id.tvDiscount).visibility = View.VISIBLE
-        } else {
-            view.findViewById<TextView>(R.id.tvDiscount).visibility = View.GONE
-        }
+        // Pricing is now handled by the fixed bottom banner in CourseDetailActivity
     }
 
     companion object {

@@ -101,14 +101,18 @@ class CourseDetailActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        val btnEnroll = findViewById<MaterialButton>(R.id.btnEnroll)
+        val btnEnrollBanner = findViewById<MaterialButton>(R.id.btnEnrollBanner)
         
-        btnEnroll.setOnClickListener {
+        btnEnrollBanner.setOnClickListener {
             // Navigate to CheckoutActivity
             val intent = android.content.Intent(this, CheckoutActivity::class.java)
             intent.putExtra("COURSE_ID", courseId)
             startActivity(intent)
         }
+        
+        // Force button to use custom background
+        btnEnrollBanner.setBackgroundResource(R.drawable.bg_payment_button_premium)
+        btnEnrollBanner.backgroundTintList = null
     }
 
     private fun loadCourseData() {
@@ -159,21 +163,21 @@ class CourseDetailActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_book)
             .into(ivThumbnail)
         
-        // Pricing
+        // Pricing - Update banner views
         val originalPrice = course.pricing.price
         val discount = course.pricing.discount
         val discountedPrice = originalPrice - (originalPrice * discount / 100)
 
-        findViewById<TextView>(R.id.tvDiscountedPrice).text = "₹${discountedPrice.toInt()}"
-        findViewById<TextView>(R.id.tvOriginalPrice).text = "₹${originalPrice.toInt()}"
-        findViewById<TextView>(R.id.tvOriginalPrice).paintFlags = 
-            findViewById<TextView>(R.id.tvOriginalPrice).paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-
+        findViewById<TextView>(R.id.tvBannerDiscountedPrice).text = "₹${discountedPrice.toInt()}"
+        findViewById<TextView>(R.id.tvBannerOriginalPrice).text = "₹${originalPrice.toInt()}"
+        findViewById<TextView>(R.id.tvBannerOriginalPrice).paintFlags = 
+            findViewById<TextView>(R.id.tvBannerOriginalPrice).paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+        
         if (discount > 0) {
-            findViewById<TextView>(R.id.tvDiscount).text = "${discount}% OFF"
-            findViewById<TextView>(R.id.tvDiscount).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.tvBannerDiscount).text = "${discount.toInt()}% OFF"
+            findViewById<TextView>(R.id.tvBannerDiscount).visibility = View.VISIBLE
         } else {
-            findViewById<TextView>(R.id.tvDiscount).visibility = View.GONE
+            findViewById<TextView>(R.id.tvBannerDiscount).visibility = View.GONE
         }
     }
 
@@ -242,12 +246,12 @@ class CourseDetailActivity : AppCompatActivity() {
     }
 
     private fun updateEnrollmentUI(isEnrolled: Boolean) {
-        val cardPricing = findViewById<CardView>(R.id.cardPricing)
+        val cardPricingBanner = findViewById<CardView>(R.id.cardPricingBanner)
 
-        // Hide pricing card if user is already enrolled
-        cardPricing.visibility = if (isEnrolled) View.GONE else View.VISIBLE
+        // Hide pricing banner if user is already enrolled
+        cardPricingBanner.visibility = if (isEnrolled) View.GONE else View.VISIBLE
         
-        // Refresh tabs to update pricing visibility in Overview
+        // Refresh tabs to update content
         currentCourse?.let { setupTabs() }
     }
     fun openMentorChat(mentor: Faculty) {

@@ -3,6 +3,7 @@ package com.reflection.thecampus
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Keep
@@ -72,8 +73,10 @@ data class CourseContentItem(
     val name: String = "",
     val type: String = "", // "folder" or "file"
     val status: String = "published",
-    val isPublic: Boolean = false,
+    @get:PropertyName("isPublic") @set:PropertyName("isPublic") var isPublic: Boolean = false,
+    @get:PropertyName("isFree") @set:PropertyName("isFree") var isFree: Boolean = false, // Free content accessible to unenrolled users
     val parentId: String? = null,
     val url: String = ""
 ) : Parcelable
+
 

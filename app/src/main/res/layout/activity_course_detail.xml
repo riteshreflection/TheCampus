@@ -50,88 +50,6 @@
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        <!-- Pricing Card (Hidden if enrolled) - Inside AppBar so it collapses -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardPricing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:layout_scrollFlags="scroll|snap"
-            app:cardCornerRadius="12dp"
-            android:visibility="gone"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSurface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Pricing"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="12dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:id="@+id/tvDiscountedPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₹13,499"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorPrimary"
-                        android:layout_marginEnd="12dp"/>
-
-                    <TextView
-                        android:id="@+id/tvOriginalPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="₹14,999"
-                        android:textSize="18sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.6"/>
-
-                    <TextView
-                        android:id="@+id/tvDiscount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10% OFF"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorSuccess"
-                        android:background="@drawable/bg_tag"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
-                        android:layout_marginStart="8dp"/>
-                </LinearLayout>
-
-                <!-- Enroll Button inside pricing card -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnEnroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Enroll Now"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="12dp"/>
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
         <!-- TabLayout wrapped in CardView - Sticky at top when scrolled -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -164,7 +82,105 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <!-- Fixed Bottom Pricing Banner -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardPricingBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:background="@drawable/bg_free_content_light"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_free_content_light">
+
+            <!-- Pricing Info Section (60%) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:orientation="vertical"
+                android:layout_marginEnd="12dp">
+
+                <!-- Discounted Price -->
+                <TextView
+                    android:id="@+id/tvBannerDiscountedPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹13,499"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary"/>
+
+                <!-- Original Price + Discount Badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="4dp">
+
+                    <TextView
+                        android:id="@+id/tvBannerOriginalPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₹14,999"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:alpha="0.6"
+                        style="@style/StrikethroughText"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvBannerDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10% OFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorSuccess"
+                        android:background="@drawable/bg_tag"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Enroll Button (40%) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEnrollBanner"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="0.4"
+                android:text="Enroll Now"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/payment_button_text_color"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_payment_button_premium"
+                app:backgroundTint="@null"
+                app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="end"
+                app:iconTint="@color/payment_button_text_color"
+                app:cornerRadius="12dp"
+                app:strokeWidth="0dp"
+                app:rippleColor="#40FFD700"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Shimmer View Container -->
     <com.facebook.shimmer.ShimmerFrameLayout

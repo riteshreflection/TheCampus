@@ -77,8 +77,28 @@ class CourseContentAdapter(
                 binding.ivTreeLines.setImageResource(drawableRes)
             }
 
-            // Lock state - content is locked only if user is NOT enrolled AND content is NOT public
-            val isLocked = !isEnrolled && !item.isPublic
+            // Lock state - unlock if enrolled OR content is public OR content is free
+            val isLocked = !isEnrolled && !item.isPublic && !item.isFree
+            val isFree = item.isPublic || item.isFree
+            
+            timber.log.Timber.d("CourseContent FOLDER: ${item.name}, isEnrolled=$isEnrolled, isPublic=${item.isPublic}, isFree=${item.isFree}, isLocked=$isLocked")
+            
+            // Show FREE badge for free content
+            val freeBadge = binding.root.findViewById<android.widget.TextView>(com.reflection.thecampus.R.id.tvFreeBadge)
+            freeBadge.visibility = if (isFree && !isEnrolled) View.VISIBLE else View.GONE
+            
+            // Apply gold background for free content
+            val cardView = binding.root.findViewById<androidx.cardview.widget.CardView>(com.reflection.thecampus.R.id.cardFolder)
+            if (isFree && !isEnrolled) {
+                cardView.setCardBackgroundColor(android.graphics.Color.TRANSPARENT)
+                cardView.setBackgroundResource(com.reflection.thecampus.R.drawable.bg_free_content_light)
+            } else {
+                cardView.background = null
+                val typedValue = android.util.TypedValue()
+                binding.root.context.theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+                cardView.setCardBackgroundColor(typedValue.data)
+            }
+            
             binding.ivLock.visibility = if (isLocked) View.VISIBLE else View.GONE
             binding.tvFolderName.alpha = if (isLocked) 0.6f else 1.0f
 
@@ -88,12 +108,17 @@ class CourseContentAdapter(
                 binding.ivArrow.visibility = View.VISIBLE
                 
                 binding.headerLayout.setOnClickListener {
-                    // Allow expansion if user is enrolled OR content is public
+                    // Allow expansion if user is enrolled OR content is free
                     if (isLocked) {
+                        // Shake animation for locked content
+                        val shakeAnim = android.view.animation.AnimationUtils.loadAnimation(binding.root.context, com.reflection.thecampus.R.anim.shake_lock)
+                        binding.root.startAnimation(shakeAnim)
+                        binding.root.performHapticFeedback(android.view.HapticFeedbackConstants.REJECT)
                         // Show toast for locked content
                         onFolderClick(item)
                     } else {
-                        // Allow expansion for enrolled users or public content
+                        // Allow expansion for enrolled users or free content
+                        binding.root.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
                         toggleExpansion()
                     }
                 }
@@ -105,8 +130,42 @@ class CourseContentAdapter(
 
         private fun toggleExpansion() {
             isExpanded = !isExpanded
-            binding.rvSubContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
-            binding.ivArrow.animate().rotation(if (isExpanded) 90f else 0f).setDuration(200).start()
+            
+            // Simply toggle visibility without animations on RecyclerView
+            // (animations were causing rendering issues with nested cards)
+            if (isExpanded) {
+                // Ensure adapter and layout manager are properly set
+                if (binding.rvSubContent.adapter == null) {
+                    binding.rvSubContent.layoutManager = LinearLayoutManager(binding.root.context)
+                    binding.rvSubContent.adapter = childAdapter
+                }
+                // Reset height to WRAP_CONTENT when expanding
+                val params = binding.rvSubContent.layoutParams
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                binding.rvSubContent.layoutParams = params
+                binding.rvSubContent.visibility = View.VISIBLE
+            } else {
+                binding.rvSubContent.visibility = View.GONE
+                // Force height to 0 when collapsed
+                val params = binding.rvSubContent.layoutParams
+                params.height = 0
+                binding.rvSubContent.layoutParams = params
+            }
+            
+            // Request layout to prevent overlap issues
+            binding.root.requestLayout()
+            
+            // Post another layout request to ensure proper recalculation
+            binding.root.post {
+                binding.root.requestLayout()
+            }
+            
+            // Smooth arrow rotation (this animation works fine)
+            binding.ivArrow.animate()
+                .rotation(if (isExpanded) 90f else 0f)
+                .setDuration(300)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .start()
         }
     }
 
@@ -126,13 +185,41 @@ class CourseContentAdapter(
                 binding.ivTreeLines.setImageResource(drawableRes)
             }
 
-            // Lock state - content is locked only if user is NOT enrolled AND content is NOT public
-            val isLocked = !isEnrolled && !item.isPublic
+            // Lock state - unlock if enrolled OR content is public OR content is free
+            val isLocked = !isEnrolled && !item.isPublic && !item.isFree
+            val isFree = item.isPublic || item.isFree
+            
+            timber.log.Timber.d("CourseContent FILE: ${item.name}, isEnrolled=$isEnrolled, isPublic=${item.isPublic}, isFree=${item.isFree}, isLocked=$isLocked")
+            
+            // Show FREE badge for free content
+            val freeBadge = binding.root.findViewById<android.widget.TextView>(com.reflection.thecampus.R.id.tvFreeBadge)
+            freeBadge.visibility = if (isFree && !isEnrolled) View.VISIBLE else View.GONE
+            
+            // Apply gold background for free content
+            val cardView = binding.root.findViewById<androidx.cardview.widget.CardView>(com.reflection.thecampus.R.id.cardFile)
+            if (isFree && !isEnrolled) {
+                cardView.setCardBackgroundColor(android.graphics.Color.TRANSPARENT)
+                cardView.setBackgroundResource(com.reflection.thecampus.R.drawable.bg_free_content_light)
+            } else {
+                cardView.background = null
+                val typedValue = android.util.TypedValue()
+                binding.root.context.theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+                cardView.setCardBackgroundColor(typedValue.data)
+            }
+            
             binding.ivLock.visibility = if (isLocked) View.VISIBLE else View.GONE
             binding.tvFileName.alpha = if (isLocked) 0.6f else 1.0f
 
             // Allow file click - the fragment will handle access control
             binding.root.setOnClickListener {
+                if (isLocked) {
+                    // Shake animation for locked content
+                    val shakeAnim = android.view.animation.AnimationUtils.loadAnimation(binding.root.context, com.reflection.thecampus.R.anim.shake_lock)
+                    binding.root.startAnimation(shakeAnim)
+                    binding.root.performHapticFeedback(android.view.HapticFeedbackConstants.REJECT)
+                } else {
+                    binding.root.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+                }
                 onFileClick(item)
             }
         }

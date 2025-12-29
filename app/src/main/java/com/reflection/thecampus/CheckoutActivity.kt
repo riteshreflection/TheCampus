@@ -48,8 +48,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     private var currentCourse: Course? = null
     private var userProfile: UserProfile? = null
 
-    private lateinit var cbPaymentPolicy: CheckBox
-    private lateinit var cbRefundPolicy: CheckBox
+    private lateinit var cbPolicies: CheckBox
     private lateinit var btnProceedToPayment: MaterialButton
     
     private lateinit var tilCoupon: TextInputLayout
@@ -73,9 +72,15 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             e.printStackTrace()
         }
 
-        // Set status bar color
-        window.statusBarColor = getColor(android.R.color.white)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        // Set status bar color to match premium background
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+        window.statusBarColor = typedValue.data
+
+        // Set status bar icon appearance based on theme
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val windowInsetsController = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         viewModel = ViewModelProvider(this)[CourseDetailViewModel::class.java]
 
@@ -103,9 +108,12 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     }
 
     private fun setupViews() {
-        cbPaymentPolicy = findViewById(R.id.cbPaymentPolicy)
-        cbRefundPolicy = findViewById(R.id.cbRefundPolicy)
+        cbPolicies = findViewById(R.id.cbPolicies)
         btnProceedToPayment = findViewById(R.id.btnProceedToPayment)
+        
+        // Force MaterialButton to use custom background
+        btnProceedToPayment.setBackgroundResource(R.drawable.bg_payment_button_premium)
+        btnProceedToPayment.backgroundTintList = null
         
         tilCoupon = findViewById(R.id.tilCoupon)
         etCoupon = findViewById(R.id.etCoupon)
@@ -118,11 +126,11 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
         // Setup Policy Links
         setupPolicyLinks()
 
-        // Enable button only when both checkboxes are checked
-        cbPaymentPolicy.setOnCheckedChangeListener { _, _ -> updateButtonState() }
-        cbRefundPolicy.setOnCheckedChangeListener { _, _ -> updateButtonState() }
+        // Enable button only when checkbox is checked
+        cbPolicies.setOnCheckedChangeListener { _, _ -> updateButtonState() }
 
         btnProceedToPayment.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
             proceedToPayment()
         }
         
@@ -143,7 +151,25 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     }
 
     private fun updateButtonState() {
-        btnProceedToPayment.isEnabled = cbPaymentPolicy.isChecked && cbRefundPolicy.isChecked
+        val isEnabled = cbPolicies.isChecked
+        btnProceedToPayment.isEnabled = isEnabled
+        
+        // Explicitly set background to ensure it shows properly
+        if (isEnabled) {
+            btnProceedToPayment.setBackgroundResource(R.drawable.bg_payment_button_premium)
+            // Just add entrance animation, no continuous pulsing
+            btnProceedToPayment.animate()
+                .alpha(1.0f)
+                .scaleX(1.0f)
+                .scaleY(1.0f)
+                .setDuration(400)
+                .setInterpolator(android.view.animation.OvershootInterpolator(1.2f))
+                .start()
+        } else {
+            btnProceedToPayment.clearAnimation()
+            // Reset to static background when disabled
+            btnProceedToPayment.setBackgroundResource(R.drawable.bg_payment_button_premium)
+        }
     }
 
     private fun loadUserProfile() {
@@ -232,8 +258,26 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     }
 
     private fun updatePriceUI(priceDetails: PriceDetails) {
-        findViewById<TextView>(R.id.tvOriginalPrice).text = "₹${priceDetails.originalPrice.toInt()}"
-        findViewById<TextView>(R.id.tvTotalPrice).text = "₹${priceDetails.finalPrice.toInt()}"
+        val tvOriginalPrice = findViewById<TextView>(R.id.tvOriginalPrice)
+        val tvTotalPrice = findViewById<TextView>(R.id.tvTotalPrice)
+        
+        // Animate price changes
+        tvOriginalPrice.text = "₹${priceDetails.originalPrice.toInt()}"
+        tvTotalPrice.text = "₹${priceDetails.finalPrice.toInt()}"
+        
+        // Add subtle scale animation to total price
+        tvTotalPrice.animate()
+            .scaleX(1.1f)
+            .scaleY(1.1f)
+            .setDuration(200)
+            .withEndAction {
+                tvTotalPrice.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(200)
+                    .start()
+            }
+            .start()
 
         // Discount section
         val layoutDiscount = findViewById<LinearLayout>(R.id.layoutDiscount)
@@ -269,7 +313,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             layoutTax.visibility = View.GONE
         }
         
-        // Coupon UI
+        // Coupon UI with animation
         if (priceDetails.couponCode != null) {
             layoutAppliedCoupon.visibility = View.VISIBLE
             tilCoupon.visibility = View.GONE
@@ -277,6 +321,16 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             
             tvAppliedCouponCode.text = priceDetails.couponCode
             tvAppliedCouponDesc.text = "₹${priceDetails.couponDiscount.toInt()} saved"
+            
+            // Add success animation
+            layoutAppliedCoupon.alpha = 0f
+            layoutAppliedCoupon.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .start()
+            
+            // Haptic feedback for success
+            layoutAppliedCoupon.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM)
         } else {
             layoutAppliedCoupon.visibility = View.GONE
             tilCoupon.visibility = View.VISIBLE
@@ -414,51 +468,49 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     }
 
     private fun setupPolicyLinks() {
-        val cbPaymentPolicy = findViewById<CheckBox>(R.id.cbPaymentPolicy)
-        val cbRefundPolicy = findViewById<CheckBox>(R.id.cbRefundPolicy)
+        val tvPolicyText = findViewById<TextView>(R.id.tvPolicyText)
 
-        setPolicyText(
-            cbPaymentPolicy,
-            "I accept the Payment Policy",
-            "Payment Policy",
-            "https://www.thecampus.in/terms-and-conditions"
-        )
-
-        setPolicyText(
-            cbRefundPolicy,
-            "I accept the Refund Policy",
-            "Refund Policy",
-            "https://www.thecampus.in/refund-and-cancellation-policy"
-        )
-    }
-
-    private fun setPolicyText(checkBox: CheckBox, fullText: String, clickablePart: String, url: String) {
+        val fullText = "I accept the Payment Policy and Refund Policy"
         val spannableString = SpannableString(fullText)
-        val startIndex = fullText.indexOf(clickablePart)
-        val endIndex = startIndex + clickablePart.length
-
-        if (startIndex >= 0) {
-            val clickableSpan = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    // Prevent checkbox toggling when clicking the link
-                    // Note: This might be tricky as the checkbox consumes clicks. 
-                    // Usually setting movementMethod is enough for TextView, but CheckBox might toggle.
-                    // Let's open the URL.
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                }
-
-                override fun updateDrawState(ds: android.text.TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.isUnderlineText = true
-                    ds.color = resources.getColor(R.color.colorPrimary, theme)
-                }
+        
+        // Make "Payment Policy" clickable
+        val paymentPolicyStart = fullText.indexOf("Payment Policy")
+        val paymentPolicyEnd = paymentPolicyStart + "Payment Policy".length
+        
+        val paymentPolicySpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.thecampus.in/terms-and-conditions"))
+                startActivity(intent)
             }
-            spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
 
-        checkBox.text = spannableString
-        checkBox.movementMethod = LinkMovementMethod.getInstance()
+            override fun updateDrawState(ds: android.text.TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = true
+                ds.color = resources.getColor(R.color.colorPrimary, theme)
+            }
+        }
+        spannableString.setSpan(paymentPolicySpan, paymentPolicyStart, paymentPolicyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        
+        // Make "Refund Policy" clickable
+        val refundPolicyStart = fullText.indexOf("Refund Policy")
+        val refundPolicyEnd = refundPolicyStart + "Refund Policy".length
+        
+        val refundPolicySpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.thecampus.in/refund-and-cancellation-policy"))
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: android.text.TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = true
+                ds.color = resources.getColor(R.color.colorPrimary, theme)
+            }
+        }
+        spannableString.setSpan(refundPolicySpan, refundPolicyStart, refundPolicyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        tvPolicyText.text = spannableString
+        tvPolicyText.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onPaymentVerify(orderID: String?) {

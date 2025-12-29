@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
+import com.reflection.thecampus.CheckoutActivity
 import com.reflection.thecampus.Course
 import com.reflection.thecampus.CourseContentItem
 import com.reflection.thecampus.R
@@ -49,9 +52,9 @@ class CourseContentFragment : Fragment() {
         adapter = CourseContentAdapter(
             isEnrolled = isEnrolled,
             onFolderClick = { item ->
-                // Only called for locked items or empty folders if we want
-                if (!isEnrolled && !item.isPublic) {
-                    Toast.makeText(context, "Enroll to view content", Toast.LENGTH_SHORT).show()
+                // Show enrollment bottom sheet for locked items
+                if (!isEnrolled && !item.isPublic && !item.isFree) {
+                    showEnrollmentBottomSheet()
                 }
             },
             onFileClick = { item ->
@@ -62,8 +65,8 @@ class CourseContentFragment : Fragment() {
     }
 
     private fun openFile(item: CourseContentItem) {
-        if (!isEnrolled && !item.isPublic) {
-            Toast.makeText(context, "Enroll to view content", Toast.LENGTH_SHORT).show()
+        if (!isEnrolled && !item.isPublic && !item.isFree) {
+            showEnrollmentBottomSheet()
             return
         }
 
@@ -113,11 +116,164 @@ class CourseContentFragment : Fragment() {
             .filter { it.parentId == item.id && it.status == "published" }
             .sortedBy { it.name }
         
+        // Check if this item or any parent is free/public
+        val isInheritedFree = isParentFreeOrPublic(item, contentMap)
+        
+        // Create modified item with inherited free status
+        val modifiedItem = if (isInheritedFree && !item.isPublic && !item.isFree) {
+            item.copy(isPublic = true) // Inherit parent's free status
+        } else {
+            item
+        }
+        
         val childrenNodes = childrenItems.map { child ->
             buildNode(child, contentMap)
         }
 
-        return ContentNode(item, childrenNodes)
+        return ContentNode(modifiedItem, childrenNodes)
+    }
+    
+    private fun isParentFreeOrPublic(item: CourseContentItem, contentMap: Map<String, CourseContentItem>): Boolean {
+        var currentParentId = item.parentId
+        while (!currentParentId.isNullOrEmpty()) {
+            val parent = contentMap[currentParentId]
+            if (parent != null && (parent.isPublic || parent.isFree)) {
+                return true
+            }
+            currentParentId = parent?.parentId
+        }
+        return false
+    }
+
+    private fun showEnrollmentBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_enroll_prompt, null)
+        bottomSheetDialog.setContentView(view)
+        
+        // Start sparkle animations for all particles
+        val sparkleAnim = android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.sparkle_glitter)
+        
+        // Main sparkles
+        view.findViewById<android.widget.ImageView>(R.id.sparkle1)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.sparkle2)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.sparkle3)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.sparkle4)?.startAnimation(sparkleAnim)
+        
+        // Fine particles
+        view.findViewById<android.widget.ImageView>(R.id.particle1)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle2)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle3)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle4)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle5)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle6)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle7)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle8)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle9)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle10)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle11)?.startAnimation(sparkleAnim)
+        view.findViewById<android.widget.ImageView>(R.id.particle12)?.startAnimation(sparkleAnim)
+        
+        // Set course name
+        val tvCourseName = view.findViewById<TextView>(R.id.tvCourseName)
+        tvCourseName.text = course?.basicInfo?.name ?: "This Course"
+        
+        // Set pricing with discount (matching CourseDetailActivity logic)
+        val tvPrice = view.findViewById<TextView>(R.id.tvPrice)
+        val tvOriginalPrice = view.findViewById<TextView>(R.id.tvOriginalPrice)
+        val tvDiscount = view.findViewById<TextView>(R.id.tvDiscount)
+        
+        course?.pricing?.let { pricing ->
+            val originalPrice = pricing.price
+            val discount = pricing.discount
+            val discountedPrice = originalPrice - (originalPrice * discount / 100)
+            
+            // Show discounted price as main price
+            tvPrice.text = "₹${discountedPrice.toInt()}"
+            
+            // Show discount if exists
+            if (discount > 0) {
+                tvOriginalPrice.text = "₹${originalPrice.toInt()}"
+                tvOriginalPrice.visibility = View.VISIBLE
+                tvOriginalPrice.paintFlags = tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                
+                tvDiscount.text = "${discount}% OFF"
+                tvDiscount.visibility = View.VISIBLE
+            } else {
+                tvOriginalPrice.visibility = View.GONE
+                tvDiscount.visibility = View.GONE
+            }
+        }
+        
+        // Add default course features
+        val llFeatures = view.findViewById<android.widget.LinearLayout>(R.id.llFeatures)
+        llFeatures.removeAllViews()
+        
+        // Use default features since course.features doesn't exist
+        val defaultFeatures = listOf(
+            "Access all course content",
+            "Take all practice tests",
+            "Download study materials"
+        )
+        
+        defaultFeatures.forEach { feature ->
+            val featureLayout = android.widget.LinearLayout(requireContext()).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = 12.dpToPx()
+                }
+            }
+            
+            val checkIcon = android.widget.ImageView(requireContext()).apply {
+                setImageResource(R.drawable.ic_check_circle)
+                setColorFilter(android.graphics.Color.parseColor("#4CAF50"))
+                layoutParams = android.widget.LinearLayout.LayoutParams(24.dpToPx(), 24.dpToPx()).apply {
+                    marginEnd = 12.dpToPx()
+                }
+            }
+            
+            val featureText = TextView(requireContext()).apply {
+                text = feature
+                textSize = 14f
+                val typedValue = android.util.TypedValue()
+                context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                setTextColor(typedValue.data)
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            }
+            
+            featureLayout.addView(checkIcon)
+            featureLayout.addView(featureText)
+            llFeatures.addView(featureLayout)
+        }
+        
+        // Enroll Now button
+        view.findViewById<MaterialButton>(R.id.btnEnrollNow).setOnClickListener {
+            bottomSheetDialog.dismiss()
+            // Navigate to CheckoutActivity with course data
+            val intent = Intent(requireContext(), CheckoutActivity::class.java)
+            intent.putExtra("COURSE_ID", course?.id)
+            intent.putExtra("COURSE_NAME", course?.basicInfo?.name)
+            intent.putExtra("COURSE_PRICE", course?.pricing?.price)
+            startActivity(intent)
+        }
+        
+        // Maybe Later button
+        view.findViewById<MaterialButton>(R.id.btnMaybeLater).setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+        
+        bottomSheetDialog.show()
+    }
+    
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
     }
 
     companion object {

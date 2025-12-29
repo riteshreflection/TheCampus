@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    
+    <item android:duration="1000">
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <gradient
+                android:angle="135"
+                android:startColor="#FFD700"
+                android:centerColor="#FFC700"
+                android:endColor="#FFB700"
+                android:type="linear" />
+        </shape>
+    </item>
+    
+    <item android:duration="1000">
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <gradient
+                android:angle="135"
+                android:startColor="#FFE55C"
+                android:centerColor="#FFD700"
+                android:endColor="#FFC700"
+                android:type="linear" />
+        </shape>
+    </item>
+    
+    <item android:duration="1000">
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <gradient
+                android:angle="135"
+                android:startColor="#FFD700"
+                android:centerColor="#FFC700"
+                android:endColor="#FFB700"
+                android:type="linear" />
+        </shape>
+    </item>
+</animation-list>
