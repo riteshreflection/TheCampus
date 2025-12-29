@@ -63,8 +63,18 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Check authentication first - redirect if not logged in
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Please login to continue", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        
         setContentView(R.layout.activity_checkout)
 
         try {

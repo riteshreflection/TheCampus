@@ -30,6 +30,13 @@ class AnnouncementAdapter(
     override fun onBindViewHolder(holder: AnnouncementViewHolder, position: Int) {
         val announcement = announcements[position]
         
+        // Highlight the most recent notification (first item)
+        if (position == 0) {
+            holder.itemView.setBackgroundResource(R.drawable.bg_notification_recent)
+        } else {
+            holder.itemView.background = null
+        }
+        
         holder.tvCourseName.text = announcement.courseName
         holder.tvAuthor.text = "By: ${announcement.author}"
         holder.tvMessage.text = announcement.message
@@ -44,12 +51,12 @@ class AnnouncementAdapter(
 
         // Load image if available
         if (announcement.imageUrl.isNotEmpty()) {
-            holder.ivImage.visibility = View.VISIBLE
+            holder.cardImage.visibility = View.VISIBLE
             Glide.with(holder.itemView.context)
                 .load(announcement.imageUrl)
                 .into(holder.ivImage)
         } else {
-            holder.ivImage.visibility = View.GONE
+            holder.cardImage.visibility = View.GONE
         }
     }
 
@@ -78,4 +85,5 @@ class AnnouncementViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val tvAuthor: TextView = view.findViewById(R.id.tvAuthor)
     val tvMessage: TextView = view.findViewById(R.id.tvMessage)
     val ivImage: ImageView = view.findViewById(R.id.ivAnnouncementImage)
+    val cardImage: View = view.findViewById(R.id.cardImage)
 }

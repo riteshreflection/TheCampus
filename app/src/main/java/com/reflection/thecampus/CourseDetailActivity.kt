@@ -105,10 +105,19 @@ class CourseDetailActivity : AppCompatActivity() {
         val btnEnrollBanner = findViewById<MaterialButton>(R.id.btnEnrollBanner)
         
         btnEnrollBanner.setOnClickListener {
-            // Navigate to CheckoutActivity
-            val intent = android.content.Intent(this, CheckoutActivity::class.java)
-            intent.putExtra("COURSE_ID", courseId)
-            startActivity(intent)
+            // Check if user is logged in
+            val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            
+            if (currentUser == null) {
+                // User not logged in - show login bottom sheet
+                val loginSheet = LoginPromptBottomSheet()
+                loginSheet.show(supportFragmentManager, LoginPromptBottomSheet.TAG)
+            } else {
+                // User logged in - proceed to checkout
+                val intent = android.content.Intent(this, CheckoutActivity::class.java)
+                intent.putExtra("COURSE_ID", courseId)
+                startActivity(intent)
+            }
         }
         
         // Force button to use custom background

@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private lateinit var loginBanner: android.view.View
+    private lateinit var notificationBanner: android.view.View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Apply dynamic theme BEFORE super.onCreate to ensure it takes effect for all attributes
@@ -95,6 +96,9 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Premium Login Banner
         setupLoginBanner()
+        
+        // Initialize Notification Permission Banner
+        setupNotificationBanner()
 
         // Handle Back Press
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
@@ -156,6 +160,85 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+    
+    private fun setupNotificationBanner() {
+        notificationBanner = findViewById(R.id.notificationPermissionBanner)
+        val btnEnable = notificationBanner.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnEnableNotificationsBanner)
+        
+        btnEnable.setOnClickListener {
+            openNotificationSettings()
+        }
+    }
+    
+    private fun checkNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ - Check POST_NOTIFICATIONS permission
+            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                
+                // Check if this is the first time asking
+                val prefs = getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                val hasAskedBefore = prefs.getBoolean("notification_permission_asked", false)
+                
+                if (!hasAskedBefore) {
+                    // First time - auto-request permission
+                    androidx.core.app.ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        101 // Request Code
+                    )
+                    // Mark as asked
+                    prefs.edit().putBoolean("notification_permission_asked", true).apply()
+                } else {
+                    // Already asked before - just show banner
+                    notificationBanner.visibility = android.view.View.VISIBLE
+                }
+            } else {
+                notificationBanner.visibility = android.view.View.GONE
+            }
+        } else {
+            // For older Android versions, check if notifications are enabled
+            val notificationManager = androidx.core.app.NotificationManagerCompat.from(this)
+            if (!notificationManager.areNotificationsEnabled()) {
+                notificationBanner.visibility = android.view.View.VISIBLE
+            } else {
+                notificationBanner.visibility = android.view.View.GONE
+            }
+        }
+    }
+    
+    private fun openNotificationSettings() {
+        val intent = android.content.Intent().apply {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+            } else {
+                action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = android.net.Uri.fromParts("package", packageName, null)
+            }
+        }
+        startActivity(intent)
+    }
+    
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101) {
+            // Notification permission result
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                // Permission granted - hide banner
+                notificationBanner.visibility = android.view.View.GONE
+            } else {
+                // Permission denied - show banner for future access
+                notificationBanner.visibility = android.view.View.VISIBLE
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -175,19 +258,11 @@ class MainActivity : AppCompatActivity() {
         // Show/hide premium login banner based on authentication
         val authUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         loginBanner.visibility = if (authUser == null) android.view.View.VISIBLE else android.view.View.GONE
+        
+        // Check and show/hide notification permission banner
+        checkNotificationPermission()
 
-
-        // Request Notification Permission (Android 13+)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) !=
-                android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                androidx.core.app.ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    101 // Request Code
-                )
-            }
-        }
+        // Request Notification Permission (Android 13+) - removed auto-request, user must click banner
 
         // Check App Status
         viewModel.appStatus.observe(this) { status ->

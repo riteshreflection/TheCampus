@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/notificationBanner"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#1A1A1A"
+    android:padding="12dp"
+    android:gravity="center_vertical"
+    android:visibility="gone">
+
+    <!-- Bell Icon -->
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/notification_bell_new_svgrepo_com"
+        app:tint="#FFB74D"
+        android:layout_marginEnd="12dp"/>
+
+    <!-- Message Text -->
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Enable notifications to stay updated"
+        android:textSize="13sp"
+        android:textColor="#FFE0B2"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+
+    <!-- Enable Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEnableNotificationsBanner"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:text="Enable"
+        android:textSize="12sp"
+        android:textColor="#FFFFFF"
+        android:minWidth="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:backgroundTint="#FF6F00"
+        app:cornerRadius="16dp"
+        style="@style/Widget.MaterialComponents.Button"/>
+
+</LinearLayout>

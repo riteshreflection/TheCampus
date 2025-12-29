@@ -9,13 +9,24 @@
     android:background="?attr/colorSurface"
     tools:context=".MainActivity">
 
+    <!-- Notification Permission Banner (compact, one-liner) -->
+    <include
+        android:id="@+id/notificationPermissionBanner"
+        layout="@layout/banner_notification_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/notificationPermissionBanner"
         app:layout_constraintBottom_toTopOf="@+id/tab_layout"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginBottom="0dp" />
+        app:layout_goneMarginBottom="0dp"
+        app:layout_goneMarginTop="0dp" />
 
     <!-- Premium Golden Login Banner (above navigation) -->
     <include
