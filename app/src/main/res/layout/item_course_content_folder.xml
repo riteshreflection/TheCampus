@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="top">
+    android:layout_height="wrap_content">
 
     <!-- Tree Line (Visible only if not root) -->
     <ImageView
@@ -20,12 +18,12 @@
         android:id="@+id/cardFolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
@@ -39,17 +37,17 @@
                 android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="68dp"
+                android:minHeight="72dp"
                 android:orientation="horizontal"
-                android:padding="16dp"
+                android:padding="20dp"
                 android:gravity="center_vertical"
                 android:background="?attr/selectableItemBackground">
 
                 <!-- Arrow Icon (rotates when expanded) -->
                 <ImageView
                     android:id="@+id/ivArrow"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
                     android:contentDescription="Expand/Collapse"
                     app:tint="?attr/colorOnSurface"
@@ -58,8 +56,8 @@
                 <!-- Folder Icon -->
                 <ImageView
                     android:id="@+id/ivFolderIcon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:src="@drawable/folder_svgrepo_com"
                     android:contentDescription="Folder"
                     app:tint="?attr/colorPrimary"
@@ -91,13 +89,13 @@
                         android:text="FREE"
                         android:textSize="10sp"
                         android:textStyle="bold"
-                        android:textColor="#000000"
-                        android:background="@drawable/bg_golden_gradient"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="2dp"
-                        android:layout_marginTop="4dp"
+                        android:textColor="#1A1A1A"
+                        android:background="@drawable/bg_free_content_light"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:layout_marginTop="6dp"
                         android:visibility="gone"/>
 
                 </LinearLayout>
@@ -112,7 +110,7 @@
                     app:tint="?attr/colorOnSurface"
                     android:alpha="0.6"
                     android:visibility="gone"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="12dp"/>
 
             </LinearLayout>
 
@@ -123,9 +121,9 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:paddingStart="4dp"
-                android:paddingBottom="8dp"/>
+                android:paddingBottom="12dp"/>
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-</LinearLayout>
+</FrameLayout>

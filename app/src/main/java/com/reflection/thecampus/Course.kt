@@ -32,7 +32,8 @@ data class BasicInfo(
     val description: String = "",
     val level: String = "",
     val type: String = "",
-    val hasVideoExplanation: Boolean = false
+    val hasVideoExplanation: Boolean = false,
+    val askMentorEnabled: Boolean = false
 ) : Parcelable
 
 @Keep

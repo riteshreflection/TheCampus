@@ -82,7 +82,7 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="80dp"
+        android:paddingBottom="0dp"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
@@ -93,6 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:visibility="gone"
+        android:layout_marginHorizontal="@dimen/cf_dimen_8"
+        android:layout_marginBottom="@dimen/cf_dimen_2"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
         android:background="@drawable/bg_free_content_light"

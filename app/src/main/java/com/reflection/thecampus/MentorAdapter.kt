@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 class MentorAdapter(
     private val mentors: List<Faculty>,
     private val isEnrolled: Boolean,
+    private val askMentorEnabled: Boolean,
     private val onAskMentorClick: (Faculty) -> Unit
 ) : RecyclerView.Adapter<MentorAdapter.MentorViewHolder>() {
 
@@ -34,7 +35,12 @@ class MentorAdapter(
 
         holder.tvMentorName.text = mentor.name
         holder.tvMentorSpecs.text = mentor.specifications
-        holder.tvMentorExperience.text = mentor.experience
+        // Use academicExcellence if available, fallback to experience
+        holder.tvMentorExperience.text = if (mentor.academicExcellence.isNotEmpty()) {
+            mentor.academicExcellence
+        } else {
+            mentor.experience
+        }
 
         // Load profile picture
         if (mentor.profilePictureUrl.isNotEmpty()) {
@@ -47,11 +53,15 @@ class MentorAdapter(
             holder.ivMentorPhoto.setImageResource(R.drawable.ic_person)
         }
         
-        // Handle Ask Mentor button
-        holder.btnAskMentor.isEnabled = isEnrolled
-        holder.btnAskMentor.alpha = if (isEnrolled) 1.0f else 0.5f
-        holder.btnAskMentor.setOnClickListener {
-            onAskMentorClick(mentor)
+        // Handle Ask Mentor button visibility and state
+        // Show button only if: 1) Feature is enabled AND 2) User is enrolled
+        val shouldShowButton = askMentorEnabled && isEnrolled
+        holder.btnAskMentor.visibility = if (shouldShowButton) View.VISIBLE else View.GONE
+        
+        if (shouldShowButton) {
+            holder.btnAskMentor.setOnClickListener {
+                onAskMentorClick(mentor)
+            }
         }
     }
 

@@ -1,87 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="3dp"
+    android:layout_width="280dp"
+    android:layout_height="380dp"
+    android:layout_marginEnd="16dp"
+    app:cardCornerRadius="16dp"
+    android:layout_marginVertical="@dimen/cf_dimen_2"
+    app:cardElevation="2dp"
     app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <!-- Profile Picture -->
-        <ImageView
-            android:id="@+id/ivMentorPhoto"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/bg_circle_gray"
-            android:contentDescription="Mentor Photo"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="?attr/colorPrimary">
+            
+            <ImageView
+                android:id="@+id/ivMentorPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Mentor Photo"/>
+        </com.google.android.material.card.MaterialCardView>
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Name -->
+        <TextView
+            android:id="@+id/tvMentorName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Keshav Mishra"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:gravity="center"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+
+        <!-- Specifications Card with Gold Gradient -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            android:background="@drawable/bg_free_content_light"
+            app:cardBackgroundColor="@android:color/transparent">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_free_content_light"
+                android:padding="10dp">
+                
+                <TextView
+                    android:id="@+id/tvMentorSpecs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="IIT DELHI, Quantum Physics and High Energy Physics"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:gravity="center"
+                    android:maxLines="3"
+                    android:ellipsize="end"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Academic Excellence -->
+        <TextView
+            android:id="@+id/tvMentorExperience"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:orientation="vertical">
+            android:layout_marginTop="8dp"
+            android:text="Bsc Physics Hons( COLLEGE TOPPER), IIT JAM Rank 145, IIT DELHI, NGPE TOPPER, IIT KGP Two Project Complete, INTERSHIP in..."
+            android:textSize="11sp"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:maxLines="4"
+            android:ellipsize="end"/>
 
-            <!-- Name -->
-            <TextView
-                android:id="@+id/tvMentorName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dr. Anjali Sharma"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
-
-            <!-- Specifications -->
-            <TextView
-                android:id="@+id/tvMentorSpecs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Physics, Quantum Mechanics"
-                android:textSize="13sp"
-                android:textColor="?attr/colorPrimary"
-                android:layout_marginTop="4dp"/>
-
-            <!-- Experience -->
-            <TextView
-                android:id="@+id/tvMentorExperience"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15+ years of teaching experience"
-                android:textSize="12sp"
-                android:textColor="?attr/colorOnSurface"
-                android:alpha="0.7"
-                android:layout_marginTop="2dp"/>
-
-            <!-- Ask Mentor Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAskMentor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Ask Mentor"
-                android:textSize="12sp"
-                android:textAllCaps="false"
-                android:paddingVertical="4dp"
-                android:paddingHorizontal="16dp"
-                android:minHeight="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:icon="@drawable/ic_chat_bubble"
-                app:iconSize="16dp"
-                app:iconPadding="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-
-        </LinearLayout>
+        <!-- Ask Mentor Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAskMentor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ask Mentor"
+            android:textSize="13sp"
+            android:textAllCaps="false"
+            android:paddingVertical="10dp"
+            app:icon="@drawable/ic_chat_bubble"
+            app:iconSize="18dp"
+            app:iconGravity="start"
+            app:iconPadding="8dp"
+            app:cornerRadius="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
     </LinearLayout>
 

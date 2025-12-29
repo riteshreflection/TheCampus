@@ -17,6 +17,7 @@ import com.reflection.thecampus.CheckoutActivity
 import com.reflection.thecampus.Course
 import com.reflection.thecampus.CourseContentItem
 import com.reflection.thecampus.R
+import kotlin.math.floor
 
 class CourseContentFragment : Fragment() {
 
@@ -185,7 +186,7 @@ class CourseContentFragment : Fragment() {
         course?.pricing?.let { pricing ->
             val originalPrice = pricing.price
             val discount = pricing.discount
-            val discountedPrice = originalPrice - (originalPrice * discount / 100)
+            val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
             
             // Show discounted price as main price
             tvPrice.text = "₹${discountedPrice.toInt()}"

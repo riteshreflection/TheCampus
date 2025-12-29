@@ -1,124 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
+    android:fillViewport="true"
     android:background="?android:attr/colorBackground">
 
-    <ImageView
-        android:id="@+id/ivStatusIcon"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_check_circle"
-        app:tint="@color/colorSuccess"
-        android:layout_marginBottom="24dp"/>
-
-    <TextView
-        android:id="@+id/tvStatusTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Payment Successful!"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:id="@+id/tvStatusMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your order has been placed successfully."
-        android:textSize="16sp"
-        android:textColor="?attr/colorOnSurface"
-        android:alpha="0.7"
-        android:textAlignment="center"
-        android:layout_marginBottom="32dp"/>
-
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="?attr/colorSurface"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/colorDivider"
-        android:layout_marginBottom="32dp">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
 
-        <LinearLayout
+        <!-- Lottie Animation -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimation"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/animation_a"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Status Title -->
+        <TextView
+            android:id="@+id/tvStatusTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment Successful!"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Status Message -->
+        <TextView
+            android:id="@+id/tvStatusMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:text="Your order has been placed successfully. You can now access the course."
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Details Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            android:layout_marginBottom="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:orientation="vertical"
+                android:padding="20dp">
 
-                <TextView
-                    android:layout_width="0dp"
+                <!-- Order ID Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Order ID"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7"/>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:id="@+id/tvOrderId"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_book"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order ID"
+                            android:textSize="12sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:alpha="0.6"/>
+
+                        <TextView
+                            android:id="@+id/tvOrderId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ORD-123456789"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorDivider"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Transaction ID Row -->
+                <LinearLayout
+                    android:id="@+id/layoutTransactionId"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ORD-123456789"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Transaction ID"
+                            android:textSize="12sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:alpha="0.6"/>
+
+                        <TextView
+                            android:id="@+id/tvTransactionId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TXN-987654321"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:id="@+id/layoutTransactionId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+        <!-- Primary Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Go to Course"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            app:cornerRadius="12dp"
+            app:elevation="2dp"
+            android:layout_marginBottom="12dp"/>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Transaction ID"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.7"/>
+        <!-- Secondary Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Back to Home"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:cornerRadius="12dp"/>
 
-                <TextView
-                    android:id="@+id/tvTransactionId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TXN-987654321"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Go to Course"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:cornerRadius="12dp"
-        android:layout_marginBottom="16dp"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSecondary"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Back to Home"
-        android:textSize="16sp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:cornerRadius="12dp"/>
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

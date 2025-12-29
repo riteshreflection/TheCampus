@@ -61,21 +61,20 @@ class MainActivity : AppCompatActivity() {
         val adapter = MainFragmentAdapter(this)
         viewPager.adapter = adapter
         viewPager.isUserInputEnabled = false // Disable swipe navigation
-        viewPager.offscreenPageLimit = 4 // Keep all 5 fragments in memory
+        viewPager.offscreenPageLimit = 3 // Keep all 4 fragments in memory
         
         // Connect TabLayout with ViewPager2
         tabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             // Set tab icons
             tab.icon = when (position) {
                 0 -> AppCompatResources.getDrawable(this,R.drawable.book_open_svgrepo_com)
-                1 -> AppCompatResources.getDrawable(this,R.drawable.ic_dashboard) // Dashboard icon
-                2 -> AppCompatResources.getDrawable(this,R.drawable.book_bookmark_svgrepo_com)
-                3 -> AppCompatResources.getDrawable(this,R.drawable.ic_chat_bubble) // Chat icon
-                4 -> AppCompatResources.getDrawable(this,R.drawable.notification_bell_new_svgrepo_com)
+                1 -> AppCompatResources.getDrawable(this,R.drawable.book_bookmark_svgrepo_com)
+                2 -> AppCompatResources.getDrawable(this,R.drawable.ic_chat_bubble) // Chat icon
+                3 -> AppCompatResources.getDrawable(this,R.drawable.notification_bell_new_svgrepo_com)
                 else -> null
             }
             // Add Beta badge to Chat tab
-            if (position == 3) {
+            if (position == 2) {
                 tab.orCreateBadge.apply {
                     text = "Beta"
                     backgroundColor = getColor(R.color.orange_beta)
@@ -221,7 +220,7 @@ class MainActivity : AppCompatActivity() {
     
     // Public method to navigate to specific tab
     fun navigateToTab(tabIndex: Int) {
-        if (tabIndex in 0..4) {
+        if (tabIndex in 0..3) {
             viewPager.currentItem = tabIndex
         }
     }

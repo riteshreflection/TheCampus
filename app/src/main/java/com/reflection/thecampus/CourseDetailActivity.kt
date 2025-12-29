@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.facebook.shimmer.ShimmerFrameLayout
+import kotlin.math.floor
 
 class CourseDetailActivity : AppCompatActivity() {
 
@@ -166,7 +167,7 @@ class CourseDetailActivity : AppCompatActivity() {
         // Pricing - Update banner views
         val originalPrice = course.pricing.price
         val discount = course.pricing.discount
-        val discountedPrice = originalPrice - (originalPrice * discount / 100)
+        val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
 
         findViewById<TextView>(R.id.tvBannerDiscountedPrice).text = "₹${discountedPrice.toInt()}"
         findViewById<TextView>(R.id.tvBannerOriginalPrice).text = "₹${originalPrice.toInt()}"

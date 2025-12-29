@@ -3,10 +3,10 @@ package com.reflection.thecampus
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 
 class PaymentVerificationActivity : AppCompatActivity() {
@@ -15,20 +15,29 @@ class PaymentVerificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_verification)
 
-        // Set status bar color
-        window.statusBarColor = getColor(android.R.color.white)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-
         val status = intent.getStringExtra("STATUS") ?: "FAILURE"
         val orderId = intent.getStringExtra("ORDER_ID") ?: "N/A"
         val transactionId = intent.getStringExtra("TRANSACTION_ID")
         val courseId = intent.getStringExtra("COURSE_ID") ?: ""
 
+        setupStatusBar()
         setupUI(status, orderId, transactionId, courseId)
     }
 
+    private fun setupStatusBar() {
+        // Set status bar color to match background
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+        window.statusBarColor = typedValue.data
+
+        // Set status bar icon appearance based on theme
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val windowInsetsController = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
+    }
+
     private fun setupUI(status: String, orderId: String, transactionId: String?, courseId: String) {
-        val ivStatusIcon = findViewById<ImageView>(R.id.ivStatusIcon)
+        val lottieAnimation = findViewById<LottieAnimationView>(R.id.lottieAnimation)
         val tvStatusTitle = findViewById<TextView>(R.id.tvStatusTitle)
         val tvStatusMessage = findViewById<TextView>(R.id.tvStatusMessage)
         val tvOrderId = findViewById<TextView>(R.id.tvOrderId)
@@ -47,10 +56,13 @@ class PaymentVerificationActivity : AppCompatActivity() {
         }
 
         if (status == "SUCCESS") {
-            ivStatusIcon.setImageResource(R.drawable.ic_check_circle)
-            ivStatusIcon.setColorFilter(getColor(R.color.colorSuccess))
+            // Success animation
+            lottieAnimation.setAnimation(R.raw.success)
+            lottieAnimation.playAnimation()
+            
             tvStatusTitle.text = "Payment Successful!"
-            tvStatusMessage.text = "Your order has been placed successfully. You can now access the course."
+            tvStatusTitle.setTextColor(getColor(R.color.colorSuccess))
+            tvStatusMessage.text = "Your order has been placed successfully. You can now access the course content and start learning!"
             
             btnPrimary.text = "Go to Course"
             btnPrimary.setOnClickListener {
@@ -61,10 +73,13 @@ class PaymentVerificationActivity : AppCompatActivity() {
                 finish()
             }
         } else {
-            ivStatusIcon.setImageResource(R.drawable.ic_close) // Reusing close icon as error icon
-            ivStatusIcon.setColorFilter(getColor(R.color.colorError))
+            // Failure animation
+            lottieAnimation.setAnimation(R.raw.animation_b)
+            lottieAnimation.playAnimation()
+            
             tvStatusTitle.text = "Payment Failed"
-            tvStatusMessage.text = "Something went wrong with your payment. Please try again."
+            tvStatusTitle.setTextColor(getColor(R.color.colorError))
+            tvStatusMessage.text = "Unfortunately, your payment could not be processed. Please check your payment details and try again."
             
             btnPrimary.text = "Retry Payment"
             btnPrimary.setOnClickListener {

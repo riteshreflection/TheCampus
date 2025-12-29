@@ -1,4 +1,3 @@
-
 package com.reflection.thecampus
 
 import android.content.res.ColorStateList
@@ -11,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import kotlin.math.floor
 
 class CourseAdapter(
     private var courses: List<Course>,
@@ -33,6 +33,7 @@ class CourseAdapter(
         val tvOriginalPrice: TextView = view.findViewById(R.id.tvOriginalPrice)
         val tvDiscountBadge: TextView = view.findViewById(R.id.tvDiscountBadge)
         val btnEnroll: MaterialButton = view.findViewById(R.id.btnEnroll)
+        val btnStudyNow: MaterialButton = view.findViewById(R.id.btnStudyNow)
         val layoutPricing: LinearLayout = view.findViewById(R.id.layoutPricing)
         val layoutProgress: LinearLayout = view.findViewById(R.id.layoutProgress)
         val progressBar: ProgressBar = view.findViewById(R.id.progressBar)
@@ -80,13 +81,9 @@ class CourseAdapter(
             holder.progressBar.progress = progress
             holder.tvProgressPercentage.text = "$progress%"
 
-            // Update button for enrolled courses - Green "Study Now" button
-            holder.btnEnroll.text = "Study Now"
-            holder.btnEnroll.backgroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(context, R.color.colorSuccess)
-            )
-            // White text on green background
-            holder.btnEnroll.setTextColor(ContextCompat.getColor(context, R.color.white))
+            // Show Study Now button, hide Enroll button
+            holder.btnStudyNow.visibility = View.VISIBLE
+            holder.btnEnroll.visibility = View.GONE
         } else {
             // Show pricing, hide progress
             holder.layoutPricing.visibility = View.VISIBLE
@@ -94,7 +91,7 @@ class CourseAdapter(
 
             val originalPrice = course.pricing.price
             val discount = course.pricing.discount
-            val discountedPrice = originalPrice - (originalPrice * discount / 100)
+            val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
 
             holder.tvDiscountedPrice.text = "₹${discountedPrice.toInt()}"
             holder.tvOriginalPrice.text = "₹${originalPrice.toInt()}"
@@ -108,6 +105,10 @@ class CourseAdapter(
                 holder.tvDiscountBadge.visibility = View.GONE
             }
 
+            // Show Enroll button, hide Study Now button
+            holder.btnEnroll.visibility = View.VISIBLE
+            holder.btnStudyNow.visibility = View.GONE
+
             // Update button for non-enrolled courses
             holder.btnEnroll.text = "+ Enroll Now"
             
@@ -116,11 +117,18 @@ class CourseAdapter(
             context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
             holder.btnEnroll.backgroundTintList = ColorStateList.valueOf(typedValue.data)
             
-            // Set white text color for better contrast on primary color button
-            holder.btnEnroll.setTextColor(ContextCompat.getColor(context, R.color.white))
+            // Use colorOnPrimary for text color (theme-aware)
+            val textColorTypedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, textColorTypedValue, true)
+            holder.btnEnroll.setTextColor(textColorTypedValue.data)
         }
 
+        // Set click listeners for both buttons
         holder.btnEnroll.setOnClickListener {
+            onCourseClick(course)
+        }
+        
+        holder.btnStudyNow.setOnClickListener {
             onCourseClick(course)
         }
         

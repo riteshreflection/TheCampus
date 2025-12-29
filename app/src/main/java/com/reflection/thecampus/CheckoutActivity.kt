@@ -47,6 +47,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     private var courseId: String = ""
     private var currentCourse: Course? = null
     private var userProfile: UserProfile? = null
+    private var paymentLoadingBottomSheet: com.google.android.material.bottomsheet.BottomSheetDialog? = null
 
     private lateinit var cbPolicies: CheckBox
     private lateinit var btnProceedToPayment: MaterialButton
@@ -131,6 +132,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
 
         btnProceedToPayment.setOnClickListener {
             it.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+            showPaymentLoadingBottomSheet()
             proceedToPayment()
         }
         
@@ -180,8 +182,28 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             .get()
             .addOnSuccessListener { snapshot ->
                 userProfile = snapshot.getValue(UserProfile::class.java)
+                
+                // Validate profile completeness
+                if (userProfile == null || !isProfileComplete(userProfile)) {
+                    showProfileIncompleteDialog()
+                }
+            }
+            .addOnFailureListener {
+                // If profile fetch fails, show alert
+                showProfileIncompleteDialog()
             }
     }
+    
+    
+    private fun isProfileComplete(profile: UserProfile?): Boolean {
+        if (profile == null) return false
+        
+        // Check required fields - UserProfile has: userId, email, fullName, mobileNumber
+        return profile.fullName.isNotBlank() &&
+               profile.email.isNotBlank() &&
+               profile.mobileNumber.isNotBlank()
+    }
+
 
     private fun setupCoupons() {
         val adapter = CouponAdapter { offer ->
@@ -512,9 +534,23 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
         tvPolicyText.text = spannableString
         tvPolicyText.movementMethod = LinkMovementMethod.getInstance()
     }
+    
+    private fun showPaymentLoadingBottomSheet() {
+        paymentLoadingBottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_payment_loading, null)
+        paymentLoadingBottomSheet?.setContentView(view)
+        paymentLoadingBottomSheet?.setCancelable(false)
+        paymentLoadingBottomSheet?.show()
+    }
+    
+    private fun dismissPaymentLoadingBottomSheet() {
+        paymentLoadingBottomSheet?.dismiss()
+        paymentLoadingBottomSheet = null
+    }
 
     override fun onPaymentVerify(orderID: String?) {
         Log.d("CheckoutActivity", "Payment verified for order: $orderID")
+        dismissPaymentLoadingBottomSheet()
         // Navigate to PaymentVerificationActivity
         val intent = Intent(this, PaymentVerificationActivity::class.java)
         intent.putExtra("STATUS", "SUCCESS")
@@ -526,6 +562,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
 
     override fun onPaymentFailure(cfErrorResponse: CFErrorResponse?, orderID: String?) {
         Log.e("CheckoutActivity", "Payment failed: ${cfErrorResponse?.message}")
+        dismissPaymentLoadingBottomSheet()
         // Navigate to PaymentVerificationActivity
         val intent = Intent(this, PaymentVerificationActivity::class.java)
         intent.putExtra("STATUS", "FAILURE")
