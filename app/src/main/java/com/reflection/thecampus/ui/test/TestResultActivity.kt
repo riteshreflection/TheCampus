@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +45,14 @@ class TestResultActivity : AppCompatActivity() {
         val tvCorrect = findViewById<TextView>(R.id.tvCorrectCount)
         val tvIncorrect = findViewById<TextView>(R.id.tvIncorrectCount)
         val tvUnattempted = findViewById<TextView>(R.id.tvUnattemptedCount)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        
+        // New Views
+        val pbLoading = findViewById<ProgressBar>(R.id.pbLoading)
+        val svMainContent = findViewById<View>(R.id.svMainContent)
+        val btnBack = findViewById<View>(R.id.btnBack)
+        
+        btnBack.setOnClickListener { finish() }
+
         val rvQuestionAnalysis = findViewById<RecyclerView>(R.id.rvQuestionAnalysis)
         val rvSectionAnalysis = findViewById<RecyclerView>(R.id.rvSectionAnalysis)
 
@@ -58,6 +66,8 @@ class TestResultActivity : AppCompatActivity() {
         rvSectionAnalysis.isNestedScrollingEnabled = false
         sectionAdapter = SectionResultAdapter(emptyList())
         rvSectionAnalysis.adapter = sectionAdapter
+
+        setupLeaderboard()
 
         // Get data from Intent
         val score = intent.getDoubleExtra("SCORE", 0.0)
@@ -74,12 +84,17 @@ class TestResultActivity : AppCompatActivity() {
 
         // Fetch detailed data if attemptId is present
         if (!attemptId.isNullOrEmpty()) {
-            loadTestAndAttempt(attemptId, progressBar)
+            loadTestAndAttempt(attemptId, pbLoading, svMainContent)
+        } else {
+            // If no attempt ID (e.g. preview?), show content
+            pbLoading.visibility = View.GONE
+            svMainContent.visibility = View.VISIBLE
         }
     }
 
-    private fun loadTestAndAttempt(attemptId: String, progressBar: ProgressBar) {
-        progressBar.visibility = View.VISIBLE
+    private fun loadTestAndAttempt(attemptId: String, pbLoading: ProgressBar, svMainContent: View) {
+        pbLoading.visibility = View.VISIBLE
+        svMainContent.visibility = View.GONE
         
         // 1. Fetch TestAttempt
         database.getReference("testAttempts").child(attemptId).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -96,14 +111,19 @@ class TestResultActivity : AppCompatActivity() {
                     updateTimeAnalysis(attempt.timeTaken * 1000L) // Convert seconds to millis
 
                     // 2. Fetch Test
-                    fetchTest(attempt.testId, attempt, progressBar)
+                    fetchTest(attempt.testId, attempt, pbLoading, svMainContent)
+                    
+                    // 3. Fetch Leaderboard
+                    fetchLeaderboardData(attempt.testId)
                 } else {
-                    progressBar.visibility = View.GONE
+                    pbLoading.visibility = View.GONE
+                    svMainContent.visibility = View.VISIBLE
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                progressBar.visibility = View.GONE
+                pbLoading.visibility = View.GONE
+                svMainContent.visibility = View.VISIBLE
             }
         })
     }
@@ -113,10 +133,11 @@ class TestResultActivity : AppCompatActivity() {
         tvTimeTaken.text = formatTime(timeTakenMillis)
     }
 
-    private fun fetchTest(testId: String, attempt: TestAttempt, progressBar: ProgressBar) {
+    private fun fetchTest(testId: String, attempt: TestAttempt, pbLoading: ProgressBar, svMainContent: View) {
         database.getReference("tests").child(testId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(testSnapshot: DataSnapshot) {
-                progressBar.visibility = View.GONE
+                pbLoading.visibility = View.GONE
+                svMainContent.visibility = View.VISIBLE
                 val test = testSnapshot.getValue(Test::class.java)
                 if (test != null) {
                     // Update Total Marks and Progress
@@ -170,8 +191,9 @@ class TestResultActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                progressBar.visibility = View.GONE
+                Toast.makeText(this@TestResultActivity, "Loading Failed check you internet connection", Toast.LENGTH_SHORT).show()
             }
+
         })
     }
 
@@ -219,6 +241,214 @@ class TestResultActivity : AppCompatActivity() {
         }
 
         sectionAdapter.updateData(sectionResults)
+    }
+
+    // Leaderboard
+    private lateinit var leaderboardAdapter: LeaderboardAdapter
+    private var leaderboardData: com.reflection.thecampus.data.model.LeaderboardData? = null
+    private var currentTestId: String = ""
+
+    private fun setupLeaderboard() {
+        val rvLeaderboard = findViewById<RecyclerView>(R.id.rvLeaderboard)
+        val tabLayout = findViewById<com.google.android.material.tabs.TabLayout>(R.id.tabLayoutLeaderboard)
+        
+        leaderboardAdapter = LeaderboardAdapter()
+        rvLeaderboard.layoutManager = LinearLayoutManager(this)
+        rvLeaderboard.adapter = leaderboardAdapter
+        rvLeaderboard.isNestedScrollingEnabled = false
+
+        tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
+                updateLeaderboardUI(tab?.position ?: 0)
+            }
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+        })
+    }
+
+    private fun fetchLeaderboardData(testId: String) {
+        currentTestId = testId
+        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
+        
+        database.getReference("testAttempts")
+            .orderByChild("testId")
+            .equalTo(testId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    processLeaderboardData(snapshot, currentUserId)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error silently or show toast
+                }
+            })
+    }
+
+    private fun processLeaderboardData(snapshot: DataSnapshot, currentUserId: String) {
+        val userBestAttempts = mutableMapOf<String, com.reflection.thecampus.data.model.UserBestAttempt>()
+        
+        for (attemptSnapshot in snapshot.children) {
+            val attempt = attemptSnapshot.getValue(TestAttempt::class.java) ?: continue
+            val userId = attempt.studentId
+            
+            if (userId.isEmpty()) continue
+
+            if (!userBestAttempts.containsKey(userId)) {
+                userBestAttempts[userId] = com.reflection.thecampus.data.model.UserBestAttempt(
+                    userId = userId,
+                    userName = attempt.studentName ?: "Anonymous Student",
+                    userAvatar = attempt.studentAvatar,
+                    score = attempt.score,
+                    timeTaken = attempt.timeTaken,
+                    attemptCount = 1
+                )
+            } else {
+                val existing = userBestAttempts[userId]!!
+                val newAttemptCount = existing.attemptCount + 1
+                
+                // Check if this attempt is better (higher score, or same score with faster time)
+                val isBetter = attempt.score > existing.score || 
+                              (attempt.score == existing.score && attempt.timeTaken < existing.timeTaken)
+                
+                if (isBetter) {
+                    userBestAttempts[userId] = existing.copy(
+                        score = attempt.score,
+                        timeTaken = attempt.timeTaken,
+                        attemptCount = newAttemptCount
+                    )
+                } else {
+                    userBestAttempts[userId] = existing.copy(attemptCount = newAttemptCount)
+                }
+            }
+        }
+
+        // Fetch User Profiles
+        val userIds = userBestAttempts.keys.toList()
+        if (userIds.isEmpty()) {
+            finalizeLeaderboardData(userBestAttempts, currentUserId)
+            return
+        }
+
+        val tasks = userIds.map { userId ->
+            database.getReference("userProfiles").child(userId).get()
+        }
+
+        com.google.android.gms.tasks.Tasks.whenAllSuccess<DataSnapshot>(tasks)
+            .addOnSuccessListener { snapshots ->
+                for (profileSnapshot in snapshots) {
+                    val userId = profileSnapshot.key ?: continue
+                    val fullName = profileSnapshot.child("name").getValue(String::class.java) 
+                        ?: profileSnapshot.child("fullName").getValue(String::class.java)
+                        ?: profileSnapshot.child("username").getValue(String::class.java) // try multiple fields
+                    val avatar = profileSnapshot.child("avatar").getValue(String::class.java)
+                        ?: profileSnapshot.child("profilePictureUrl").getValue(String::class.java)
+
+                    if (userBestAttempts.containsKey(userId)) {
+                        val current = userBestAttempts[userId]!!
+                        userBestAttempts[userId] = current.copy(
+                            userName = fullName ?: current.userName,
+                            userAvatar = avatar ?: current.userAvatar
+                        )
+                    }
+                }
+                finalizeLeaderboardData(userBestAttempts, currentUserId)
+            }
+            .addOnFailureListener {
+                // Determine if we should show basic data anyway or fail
+                // For now, show with existing data (Anonymous)
+                finalizeLeaderboardData(userBestAttempts, currentUserId)
+            }
+    }
+
+    private fun finalizeLeaderboardData(
+        userBestAttempts: Map<String, com.reflection.thecampus.data.model.UserBestAttempt>, 
+        currentUserId: String
+    ) {
+        // Separate into first-timers and repeaters
+        val firstTimers = mutableListOf<com.reflection.thecampus.data.model.LeaderboardEntry>()
+        val repeaters = mutableListOf<com.reflection.thecampus.data.model.LeaderboardEntry>()
+        
+        // Comparator: Score Descending, then Time Ascending
+        val comparator = Comparator<com.reflection.thecampus.data.model.LeaderboardEntry> { a, b ->
+            if (a.score != b.score) {
+                b.score.compareTo(a.score)
+            } else {
+                a.timeTaken.compareTo(b.timeTaken)
+            }
+        }
+
+        userBestAttempts.values.forEach { user ->
+            val entry = com.reflection.thecampus.data.model.LeaderboardEntry(
+                userId = user.userId,
+                userName = user.userName,
+                userAvatar = user.userAvatar,
+                score = user.score,
+                timeTaken = user.timeTaken,
+                rank = 0, // Will assign after sort
+                isCurrentUser = user.userId == currentUserId,
+                attemptCount = user.attemptCount
+            )
+            
+            if (user.attemptCount == 1) {
+                firstTimers.add(entry)
+            } else {
+                repeaters.add(entry)
+            }
+        }
+
+        // Sort and assign ranks
+        firstTimers.sortWith(comparator)
+        repeaters.sortWith(comparator)
+
+        val rankedFirstTimers = firstTimers.mapIndexed { index, entry -> entry.copy(rank = index + 1) }
+        val rankedRepeaters = repeaters.mapIndexed { index, entry -> entry.copy(rank = index + 1) }
+
+        // Find current user entries for bottom display if needed
+        val currentUserFirstTimer = rankedFirstTimers.find { it.isCurrentUser }
+        val currentUserRepeater = rankedRepeaters.find { it.isCurrentUser }
+
+        leaderboardData = com.reflection.thecampus.data.model.LeaderboardData(
+            firstTimers = rankedFirstTimers,
+            repeaters = rankedRepeaters,
+            currentUserFirstTimerEntry = currentUserFirstTimer,
+            currentUserRepeaterEntry = currentUserRepeater
+        )
+
+        // Update UI
+        val tabLayout = findViewById<com.google.android.material.tabs.TabLayout>(R.id.tabLayoutLeaderboard)
+        updateLeaderboardUI(tabLayout.selectedTabPosition)
+        
+        // Hide global loading if it was shown (it might have been hidden by fetchTest, but good to ensure)
+    }
+
+    private fun updateLeaderboardUI(tabPosition: Int) {
+        val data = leaderboardData ?: return
+        val listToShow = mutableListOf<Any>()
+        val tvEmpty = findViewById<TextView>(R.id.tvLeaderboardEmpty)
+        val rvLeaderboard = findViewById<RecyclerView>(R.id.rvLeaderboard)
+
+        val sourceList = if (tabPosition == 0) data.firstTimers else data.repeaters
+        val currentUserEntry = if (tabPosition == 0) data.currentUserFirstTimerEntry else data.currentUserRepeaterEntry
+
+        if (sourceList.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            tvEmpty.text = getString(if (tabPosition == 0) R.string.leaderboard_empty_first_timers else R.string.leaderboard_empty_repeaters)
+            rvLeaderboard.visibility = View.GONE
+        } else {
+            tvEmpty.visibility = View.GONE
+            rvLeaderboard.visibility = View.VISIBLE
+
+            // Add Top 20
+            listToShow.addAll(sourceList.take(20))
+
+            // Add Current User if outside Top 20
+            if (currentUserEntry != null && currentUserEntry.rank > 20) {
+                listToShow.add("SEPARATOR") // Marker for separator
+                listToShow.add(currentUserEntry)
+            }
+        }
+
+        leaderboardAdapter.submitList(listToShow)
     }
 
     private fun formatTime(millis: Long): String {

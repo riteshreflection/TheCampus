@@ -1,58 +1,42 @@
 package com.reflection.thecampus
 
-import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.cardview.widget.CardView
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.reflection.thecampus.adapter.GroupChatAdapter
-import com.reflection.thecampus.data.model.GroupChatMessage
-import com.reflection.thecampus.utils.SwipeToReplyCallback
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.reflection.thecampus.adapter.CourseChatListAdapter
+import com.reflection.thecampus.data.model.CourseChatPreview
+import com.reflection.thecampus.ui.chat.CourseChatActivity
 import timber.log.Timber
 
 class ChatFragment : Fragment() {
 
-    private lateinit var spinnerCourses: Spinner
-    private lateinit var rvMessages: RecyclerView
-    private lateinit var etMessage: EditText
-    private lateinit var btnSend: ImageButton
+    private lateinit var rvChatList: RecyclerView
     private lateinit var layoutEmpty: View
     private lateinit var tvEmptyTitle: TextView
     private lateinit var tvEmptySubtitle: TextView
     private lateinit var ivEmptyIcon: ImageView
-    private lateinit var tvTypingIndicator: TextView
-    private lateinit var cardReplyPreview: CardView
-    private lateinit var tvReplyPreviewText: TextView
-    private lateinit var btnCancelReply: ImageView
-    private lateinit var fabScrollToBottom: com.google.android.material.floatingactionbutton.FloatingActionButton
+    private lateinit var shimmerChatList: com.facebook.shimmer.ShimmerFrameLayout
 
-    private lateinit var adapter: GroupChatAdapter
+    private lateinit var adapter: CourseChatListAdapter
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     
-    private var currentCourseId: String? = null
     private var enrolledCourses = listOf<Course>()
-    private var messagesListener: ValueEventListener? = null
-    private var replyToMessage: GroupChatMessage? = null
-    private var countdownTimer: android.os.CountDownTimer? = null
+    private val chatPreviews = mutableListOf<CourseChatPreview>()
+    private val messageListeners = mutableMapOf<String, ValueEventListener>()
     
     // Chat feature status
     private var isChatFeatureActive = true
-    private var isCourseChatActive = true
     private var chatFeatureListener: ValueEventListener? = null
-    private var courseChatListener: ValueEventListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,35 +45,22 @@ class ChatFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
 
-        // Handle window insets to prevent content being hidden behind navigation bars and keyboard
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            // Apply the larger of the two (nav bar or keyboard) to avoid jumpiness or overlap
-            val bottomPadding = kotlin.math.max(systemBars.bottom, ime.bottom)
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding)
+        // Handle window insets to prevent content being hidden behind system bars
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, systemBars.bottom)
             insets
         }
 
         // Initialize views
-        spinnerCourses = view.findViewById(R.id.spinnerCourses)
-        rvMessages = view.findViewById(R.id.rvMessages)
-        etMessage = view.findViewById(R.id.etMessage)
-        btnSend = view.findViewById(R.id.btnSend)
+        rvChatList = view.findViewById(R.id.rvChatList)
         layoutEmpty = view.findViewById(R.id.layoutEmpty)
         tvEmptyTitle = view.findViewById(R.id.tvEmptyTitle)
         tvEmptySubtitle = view.findViewById(R.id.tvEmptySubtitle)
         ivEmptyIcon = view.findViewById(R.id.ivEmptyIcon)
-        tvTypingIndicator = view.findViewById(R.id.tvTypingIndicator)
-        cardReplyPreview = view.findViewById(R.id.cardReplyPreview)
-        tvReplyPreviewText = view.findViewById(R.id.tvReplyPreviewText)
-        btnCancelReply = view.findViewById(R.id.btnCancelReply)
-        fabScrollToBottom = view.findViewById(R.id.fabScrollToBottom)
+        shimmerChatList = view.findViewById(R.id.shimmerChatList)
 
         setupRecyclerView()
-        setupMessageInput()
-        setupReplyPreview()
-        setupScrollToBottomFab()
         checkGlobalChatFeatureStatus()
         loadEnrolledCourses()
 
@@ -97,218 +68,34 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        val userId = auth.currentUser?.uid ?: ""
-        adapter = GroupChatAdapter(userId) { message, view ->
-            showReactionDialog(message, view)
+        adapter = CourseChatListAdapter { chatPreview ->
+            openCourseChat(chatPreview)
         }
         
-        val layoutManager = LinearLayoutManager(context)
-        layoutManager.stackFromEnd = true
-        rvMessages.layoutManager = layoutManager
-        rvMessages.adapter = adapter
-        
-        // Setup swipe-to-reply
-        val swipeCallback = SwipeToReplyCallback { position ->
-            adapter.getMessageAt(position)?.let { message ->
-                setReplyTo(message)
-            }
-            // Notify adapter to reset view position
-            adapter.notifyItemChanged(position)
-        }
-        val itemTouchHelper = ItemTouchHelper(swipeCallback)
-        itemTouchHelper.attachToRecyclerView(rvMessages)
+        rvChatList.layoutManager = LinearLayoutManager(context)
+        rvChatList.adapter = adapter
     }
 
-    private fun setupMessageInput() {
-        etMessage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val hasText = !s.isNullOrBlank()
-                val hasCourse = currentCourseId != null
-                btnSend.isEnabled = hasText && hasCourse
-                btnSend.alpha = if (hasText && hasCourse) 1.0f else 0.5f
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        btnSend.isEnabled = false
-        btnSend.alpha = 0.5f
-
-        btnSend.setOnClickListener {
-            if (currentCourseId == null) {
-                Toast.makeText(context, "Please select a course first", Toast.LENGTH_SHORT).show()
-
-                return@setOnClickListener
-            }
-            sendMessage()
-        }
-    }
-    
-    private fun setupReplyPreview() {
-        btnCancelReply.setOnClickListener {
-            clearReply()
-        }
-    }
-
-    private fun setupScrollToBottomFab() {
-        // Show/hide FAB based on scroll position
-        rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                
-                val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
-                val lastVisiblePosition = layoutManager?.findLastCompletelyVisibleItemPosition() ?: 0
-                val totalItems = adapter.itemCount
-                
-                // Show FAB if not at bottom
-                if (totalItems > 0 && lastVisiblePosition < totalItems - 1) {
-                    fabScrollToBottom.show()
-                } else {
-                    fabScrollToBottom.hide()
-                }
-            }
-        })
-        
-        // Scroll to bottom on FAB click
-        fabScrollToBottom.setOnClickListener {
-            if (adapter.itemCount > 0) {
-                rvMessages.smoothScrollToPosition(adapter.itemCount - 1)
-            }
-        }
-    }
-    
-    private fun setReplyTo(message: GroupChatMessage) {
-        replyToMessage = message
-        tvReplyPreviewText.text = message.text
-        cardReplyPreview.visibility = View.VISIBLE
-    }
-    
-    private fun clearReply() {
-        replyToMessage = null
-        cardReplyPreview.visibility = View.GONE
-    }
-    
-    private fun showReactionDialog(message: GroupChatMessage, anchorView: View) {
-        val userId = auth.currentUser?.uid ?: return
-        val isOwnMessage = message.senderId == userId
-        
-        val bottomSheet = com.reflection.thecampus.ui.dialogs.MessageActionsBottomSheet(
-            message = message,
-            isOwnMessage = isOwnMessage,
-            onReactionToggle = { emoji ->
-                toggleReaction(message, emoji)
-            },
-            onReply = {
-                setReplyTo(message)
-            },
-            onEdit = if (isOwnMessage) {{ editMessage(message) }} else null,
-            onDelete = if (isOwnMessage) {{ deleteMessage(message) }} else null,
-            onReport = if (!isOwnMessage) {{ reportMessage(message) }} else null
-        )
-        
-        bottomSheet.show(childFragmentManager, com.reflection.thecampus.ui.dialogs.MessageActionsBottomSheet.TAG)
-    }
-    
-    private fun toggleReaction(message: GroupChatMessage, emoji: String) {
-        val courseId = currentCourseId ?: return
-        val userId = auth.currentUser?.uid ?: return
-        
-        val reactionsRef = database.getReference("courseChats/$courseId/messages/${message.id}/reactions")
-        
-        // Check if user already reacted with this emoji
-        val existingReaction = message.reactions.entries.find { 
-            it.key == userId && it.value == emoji 
-        }
-        
-        if (existingReaction != null) {
-            // Remove reaction
-            reactionsRef.child(userId).removeValue()
-        } else {
-            // Add or update reaction
-            reactionsRef.child(userId).setValue(emoji)
-                .addOnFailureListener {
-                    Toast.makeText(context, "Failed to add reaction", Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
-    
-    private fun editMessage(message: GroupChatMessage) {
-        val editText = EditText(requireContext())
-        editText.setText(message.text)
-        editText.setSelection(message.text.length)
-        
-        AlertDialog.Builder(requireContext())
-            .setTitle("Edit Message")
-            .setView(editText)
-            .setPositiveButton("Save") { _, _ ->
-                val newText = editText.text.toString().trim()
-                if (newText.isNotEmpty()) {
-                    val courseId = currentCourseId ?: return@setPositiveButton
-                    database.getReference("courseChats/$courseId/messages/${message.id}/text")
-                        .setValue(newText)
-                        .addOnSuccessListener {
-                            Toast.makeText(context, "Message updated", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Failed to update message", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-    
-    private fun deleteMessage(message: GroupChatMessage) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Delete Message")
-            .setMessage("Are you sure you want to delete this message?")
-            .setPositiveButton("Delete") { _, _ ->
-                val courseId = currentCourseId ?: return@setPositiveButton
-                database.getReference("courseChats/$courseId/messages/${message.id}")
-                    .removeValue()
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Message deleted", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(context, "Failed to delete message", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    private fun reportMessage(message: GroupChatMessage) {
-        val userId = auth.currentUser?.uid ?: return
-        val courseId = currentCourseId ?: return
-        
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Report Message")
-            .setMessage("Report this message as inappropriate?")
-            .setPositiveButton("Report") { _, _ ->
-                val reportRef = database.getReference("messageReports").push()
-                val report = mapOf(
-                    "messageId" to message.id,
-                    "courseId" to courseId,
-                    "reportedBy" to userId,
-                    "reportedAt" to System.currentTimeMillis(),
-                    "messageText" to message.text,
-                    "messageSenderId" to message.senderId
-                )
-                
-                reportRef.setValue(report)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Message reported", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(context, "Failed to report message", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+    private fun openCourseChat(chatPreview: CourseChatPreview) {
+        val intent = Intent(requireContext(), CourseChatActivity::class.java)
+        intent.putExtra("COURSE_ID", chatPreview.courseId)
+        intent.putExtra("COURSE_NAME", chatPreview.courseName)
+        startActivity(intent)
     }
 
     private fun loadEnrolledCourses() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid
+        
+        if (userId == null) {
+            showNoCourses()
+            return
+        }
+
+        // Show shimmer
+        shimmerChatList.visibility = View.VISIBLE
+        shimmerChatList.startShimmer()
+        rvChatList.visibility = View.GONE
+        layoutEmpty.visibility = View.GONE
 
         database.getReference("users/$userId/enrolledCourses")
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -319,6 +106,8 @@ class ChatFragment : Fragment() {
                     }
 
                     if (courseIds.isEmpty()) {
+                        shimmerChatList.stopShimmer()
+                        shimmerChatList.visibility = View.GONE
                         showNoCourses()
                         return
                     }
@@ -328,6 +117,9 @@ class ChatFragment : Fragment() {
 
                 override fun onCancelled(error: DatabaseError) {
                     Timber.e("Error loading enrolled courses: ${error.message}")
+                    shimmerChatList.stopShimmer()
+                    shimmerChatList.visibility = View.GONE
+                    showNoCourses()
                 }
             })
     }
@@ -341,222 +133,99 @@ class ChatFragment : Fragment() {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(Course::class.java)?.let { course ->
-                            // CRITICAL FIX: Set the course ID from the Firebase key
                             val courseWithId = course.copy(id = courseId)
                             courses.add(courseWithId)
-
                         }
                         
                         loadedCount++
                         if (loadedCount == courseIds.size) {
                             enrolledCourses = courses
-                            setupCourseSpinner(courses)
+                            
+                            // Stop shimmer
+                            shimmerChatList.stopShimmer()
+                            shimmerChatList.visibility = View.GONE
+                            
+                            if (courses.isEmpty()) {
+                                showNoCourses()
+                            } else {
+                                rvChatList.visibility = View.VISIBLE
+                                loadChatPreviews(courses)
+                            }
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
                         Timber.e("Error loading course: ${error.message}")
+                        loadedCount++
+                        if (loadedCount == courseIds.size) {
+                            shimmerChatList.stopShimmer()
+                            shimmerChatList.visibility = View.GONE
+                            if (courses.isEmpty()) {
+                                showNoCourses()
+                            } else {
+                                rvChatList.visibility = View.VISIBLE
+                                loadChatPreviews(courses)
+                            }
+                        }
                     }
                 })
         }
     }
 
-    private fun setupCourseSpinner(courses: List<Course>) {
-        val courseNames = courses.map { it.basicInfo.name }
-        val spinnerAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            courseNames
-        )
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCourses.adapter = spinnerAdapter
-
-        spinnerCourses.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val newCourseId = courses[position].id
-
-                
-                // Only reload if course actually changed
-                if (currentCourseId != newCourseId) {
-                    // 1. Remove existing listener immediately
-                    messagesListener?.let { listener ->
-                        currentCourseId?.let { oldId ->
-                            database.getReference("courseChats/$oldId/messages").removeEventListener(listener)
-                        }
-                    }
-                    messagesListener = null
-                    
-                    // 2. Clear UI immediately
-                    adapter.setMessages(emptyList())
-                    clearReply()
-                    layoutEmpty.visibility = View.VISIBLE
-                    rvMessages.visibility = View.GONE
-                    
-                    // 3. Set new course ID and load
-                    currentCourseId = newCourseId
-                    loadMessagesForCourse(newCourseId)
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-    }
-
-    private fun loadMessagesForCourse(courseId: String) {
-        // Check course-specific chat status first
-        checkCourseChatStatus(courseId)
+    private fun loadChatPreviews(courses: List<Course>) {
+        chatPreviews.clear()
         
-        // Listener is already removed in onItemSelected, but double check to be safe
-        messagesListener?.let { listener ->
-             database.getReference("courseChats").removeEventListener(listener) // Failsafe
-        }
-
-        // Check if chat is enabled before loading messages
-        if (!isChatFeatureActive || !isCourseChatActive) {
-            showMaintenanceState()
-            return
-        }
-        
-        // Listen for messages in NEW course
-        messagesListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                // Re-check status in case it changed
-                if (!isChatFeatureActive || !isCourseChatActive) {
-                    showMaintenanceState()
-                    return
-                }
-                
-                val messages = mutableListOf<GroupChatMessage>()
-                
-                snapshot.children.forEach { child ->
-                    child.getValue(GroupChatMessage::class.java)?.let { message ->
-                        messages.add(message.copy(id = child.key ?: ""))
-                    }
-                }
-
-                adapter.setMessages(messages.sortedBy { it.timestamp })
-                
-                if (messages.isEmpty()) {
-                    showEmptyState()
-                } else {
-                    layoutEmpty.visibility = View.GONE
-                    rvMessages.visibility = View.VISIBLE
-                    rvMessages.scrollToPosition(messages.size - 1)
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Timber.e("Error loading messages: ${error.message}")
-            }
-        }
-
-        database.getReference("courseChats/$courseId/messages")
-            .addValueEventListener(messagesListener!!)
-    }
-
-    private fun sendMessage() {
-        val courseId = currentCourseId ?: return
-        val userId = auth.currentUser?.uid ?: return
-        val text = etMessage.text.toString().trim()
-        
-        if (text.isEmpty()) return
-
-        // Validate message
-        val validationResult = com.reflection.thecampus.utils.MessageValidator.validateMessage(text)
-        if (!validationResult.isValid) {
-            if (validationResult.remainingTimeSeconds > 0) {
-                // Show countdown timer
-                showRateLimitTimer(validationResult.errorMessage ?: "Rate limit", validationResult.remainingTimeSeconds)
-            } else {
-                Toast.makeText(context, validationResult.errorMessage, Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-
-        // FIXED: Include courseId in the path
-        val messageRef = database.getReference("courseChats/$courseId/messages").push()
-        val messageId = messageRef.key ?: return
-
-        // Get user name
-        database.getReference("userProfiles/$userId")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+        courses.forEach { course ->
+            // Listen for ONLY the last message in each course chat (bandwidth optimization)
+            val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val userName = snapshot.child("fullName").getValue(String::class.java) ?: "Unknown"
-
-                    val message = GroupChatMessage(
-                        id = messageId,
-                        text = text,
-                        timestamp = System.currentTimeMillis(),
-                        senderId = userId,
-                        senderName = userName,
-                        courseId = courseId, // FIXED: Ensure courseId is included
-                        replyToId = replyToMessage?.id,
-                        replyToText = replyToMessage?.text,
-                        replyToSender = replyToMessage?.senderName
+                    // Get the single last message
+                    val lastMessage = snapshot.children.firstOrNull()?.let { child ->
+                        child.getValue(com.reflection.thecampus.data.model.GroupChatMessage::class.java)?.copy(id = child.key ?: "")
+                    }
+                    
+                    val currentUserId = auth.currentUser?.uid ?: ""
+                    
+                    val preview = CourseChatPreview(
+                        courseId = course.id,
+                        courseName = course.basicInfo.name,
+                        lastMessage = lastMessage?.text ?: "No messages yet",
+                        lastMessageTime = lastMessage?.timestamp ?: 0,
+                        lastMessageSender = if (lastMessage?.senderId == currentUserId) "You" else lastMessage?.senderName ?: "",
+                        courseImageUrl = course.pricing.thumbnailUrl
                     )
-
-                    messageRef.setValue(message)
-                        .addOnSuccessListener {
-                            etMessage.setText("")
-                            clearReply()
-
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Failed to send message", Toast.LENGTH_SHORT).show()
-
-                        }
+                    
+                    // Update or add preview
+                    val existingIndex = chatPreviews.indexOfFirst { it.courseId == course.id }
+                    if (existingIndex >= 0) {
+                        chatPreviews[existingIndex] = preview
+                    } else {
+                        chatPreviews.add(preview)
+                    }
+                    
+                    adapter.submitList(chatPreviews.toList())
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Timber.e("Error getting user name: ${error.message}")
+                    Timber.e("Error loading chat preview for ${course.id}: ${error.message}")
                 }
-            })
-    }
-
-    private fun showRateLimitTimer(message: String, seconds: Int) {
-        // Cancel any existing timer
-        countdownTimer?.cancel()
-        
-        // Disable send button
-        btnSend.isEnabled = false
-        btnSend.alpha = 0.5f
-        
-        // Start countdown
-        countdownTimer = object : android.os.CountDownTimer((seconds * 1000).toLong(), 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val secondsLeft = (millisUntilFinished / 1000).toInt()
-                val timeText = if (secondsLeft >= 60) {
-                    "${secondsLeft / 60}m ${secondsLeft % 60}s"
-                } else {
-                    "${secondsLeft}s"
-                }
-                etMessage.hint = "$message $timeText"
             }
-
-            override fun onFinish() {
-                etMessage.hint = "Type a message..."
-                btnSend.isEnabled = etMessage.text.isNotBlank()
-                btnSend.alpha = if (etMessage.text.isNotBlank()) 1.0f else 0.5f
-            }
-        }.start()
+            
+            messageListeners[course.id] = listener
+            // OPTIMIZATION: Fetch only the last message using limitToLast(1)
+            database.getReference("courseChats/${course.id}/messages")
+                .orderByKey()
+                .limitToLast(1)
+                .addValueEventListener(listener)
+        }
     }
 
     private fun showNoCourses() {
-        // Hide course selector and messages
-        spinnerCourses.visibility = View.GONE
-        rvMessages.visibility = View.GONE
-        
-        // Show empty state
+        rvChatList.visibility = View.GONE
         layoutEmpty.visibility = View.VISIBLE
         tvEmptyTitle.text = "No Courses Enrolled"
-        tvEmptySubtitle.text = "Enroll in courses to start chatting with classmates"
+        tvEmptySubtitle.text = "Enroll in courses to start chatting"
         ivEmptyIcon.setImageResource(R.drawable.book_open_svgrepo_com)
-        
-        // Disable message input
-        etMessage.isEnabled = false
-        btnSend.isEnabled = false
-        btnSend.alpha = 0.5f
-        etMessage.hint = "Enroll in a course to chat"
     }
     
     private fun checkGlobalChatFeatureStatus() {
@@ -564,18 +233,13 @@ class ChatFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 isChatFeatureActive = snapshot.getValue(Boolean::class.java) ?: true
                 
-                // If chat is disabled, show maintenance state
                 if (!isChatFeatureActive) {
                     showMaintenanceState()
-                } else if (currentCourseId != null) {
-                    // Re-check course status if we have a selected course
-                    checkCourseChatStatus(currentCourseId!!)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Timber.e("Error checking chat feature status: ${error.message}")
-                // Default to enabled on error
                 isChatFeatureActive = true
             }
         }
@@ -584,79 +248,30 @@ class ChatFragment : Fragment() {
             .addValueEventListener(chatFeatureListener!!)
     }
     
-    private fun checkCourseChatStatus(courseId: String) {
-        // Remove previous listener if exists
-        courseChatListener?.let {
-            database.getReference("siteSettings/appControls/chatFeature").removeEventListener(it)
-        }
-        
-        courseChatListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                isCourseChatActive = snapshot.getValue(Boolean::class.java) ?: true
-                
-                // Reload messages with new status
-                if (currentCourseId == courseId) {
-                    if (!isChatFeatureActive || !isCourseChatActive) {
-                        showMaintenanceState()
-                    } else {
-                        // Status is good, messages will load via existing listener
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Timber.e("Error checking course chat status: ${error.message}")
-                // Default to enabled on error
-                isCourseChatActive = true
-            }
-        }
-        
-        database.getReference("siteSettings/appControls/chatFeature/$courseId")
-            .addValueEventListener(courseChatListener!!)
-    }
-    
     private fun showMaintenanceState() {
+        rvChatList.visibility = View.GONE
+        shimmerChatList.visibility = View.GONE
         layoutEmpty.visibility = View.VISIBLE
-        rvMessages.visibility = View.GONE
-        adapter.setMessages(emptyList())
         
         tvEmptyTitle.text = "Chat Unavailable"
-        tvEmptySubtitle.text = "Chat features is under maintenance"
+        tvEmptySubtitle.text = "Chat feature is under maintenance"
         ivEmptyIcon.setImageResource(R.drawable.ic_settings)
-        
-        // Disable message input
-        etMessage.isEnabled = false
-        btnSend.isEnabled = false
-        btnSend.alpha = 0.5f
-        etMessage.hint = "Chat is currently disabled"
-    }
-    
-    private fun showEmptyState() {
-        layoutEmpty.visibility = View.VISIBLE
-        rvMessages.visibility = View.GONE
-        
-        tvEmptyTitle.text = "No messages yet"
-        tvEmptySubtitle.text = "Start a conversation!"
-        ivEmptyIcon.setImageResource(R.drawable.ic_chat_bubble)
-        
-        // Enable message input
-        etMessage.isEnabled = true
-        etMessage.hint = "Type a message..."
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        messagesListener?.let {
-            currentCourseId?.let { courseId ->
-                database.getReference("courseChats/$courseId/messages").removeEventListener(it)
-            }
+        
+        // Remove all message listeners
+        messageListeners.forEach { (courseId, listener) ->
+            database.getReference("courseChats/$courseId/messages").removeEventListener(listener)
         }
+        messageListeners.clear()
+        
+        // Remove chat feature listener
         chatFeatureListener?.let {
             database.getReference("siteSettings/appControls/chatFeature/isActive").removeEventListener(it)
         }
-        courseChatListener?.let {
-            database.getReference("siteSettings/appControls/chatFeature").removeEventListener(it)
-        }
-        countdownTimer?.cancel()
+        
+        shimmerChatList.stopShimmer()
     }
 }

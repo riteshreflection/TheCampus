@@ -66,14 +66,30 @@ class CourseContentFragment : Fragment() {
     }
 
     private fun openFile(item: CourseContentItem) {
-        if (!isEnrolled && !item.isPublic && !item.isFree) {
+        // If user is enrolled, allow direct access
+        if (isEnrolled) {
+            openFileUrl(item.url)
+            return
+        }
+        
+        // For locked content, show enrollment prompt
+        if (!item.isPublic && !item.isFree) {
             showEnrollmentBottomSheet()
             return
         }
-
-        if (item.url.isNotEmpty()) {
+        
+        // For free/public content, validate profile completion
+        com.reflection.thecampus.utils.ProfileValidator.validateProfileForFreeAccess(
+            requireActivity()
+        ) {
+            openFileUrl(item.url)
+        }
+    }
+    
+    private fun openFileUrl(url: String) {
+        if (url.isNotEmpty()) {
             try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(intent)
             } catch (e: Exception) {
                 Toast.makeText(context, "Cannot open file", Toast.LENGTH_SHORT).show()

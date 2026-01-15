@@ -173,15 +173,19 @@
             android:screenOrientation="fullSensor"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.chat.CourseChatActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.referral.ReferralActivity"
             android:exported="false"
             android:screenOrientation="fullSensor" />
 
         <activity
-            android:name=".LeaderboardActivity"
+            android:name=".FullImageActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
-
+            android:theme="@style/Theme.TheCampus.Fullscreen" />
 
 
         <service

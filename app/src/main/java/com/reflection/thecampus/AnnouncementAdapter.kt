@@ -55,6 +55,14 @@ class AnnouncementAdapter(
             Glide.with(holder.itemView.context)
                 .load(announcement.imageUrl)
                 .into(holder.ivImage)
+            
+            // Make image clickable to open in full view
+            holder.ivImage.setOnClickListener {
+                val context = holder.itemView.context
+                val intent = android.content.Intent(context, FullImageActivity::class.java)
+                intent.putExtra("IMAGE_URL", announcement.imageUrl)
+                context.startActivity(intent)
+            }
         } else {
             holder.cardImage.visibility = View.GONE
         }

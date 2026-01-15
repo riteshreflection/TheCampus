@@ -27,6 +27,7 @@
                 android:layout_marginBottom="24dp">
 
                 <EditText
+                    android:id="@+id/etSearchCourses"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:background="@android:color/transparent"
@@ -35,7 +36,11 @@
                     android:paddingEnd="16dp"
                     android:drawableStart="@android:drawable/ic_menu_search"
                     android:drawablePadding="8dp"
-                    android:drawableTint="?attr/colorOnSurface"/>
+                    android:drawableTint="?attr/colorOnSurface"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:inputType="text"
+                    android:maxLines="1"/>
             </androidx.cardview.widget.CardView>
 
             <TextView

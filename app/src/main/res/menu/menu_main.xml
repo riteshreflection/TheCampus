@@ -13,13 +13,13 @@
         android:id="@+id/action_referral"
         android:icon="@drawable/gift_svgrepo_com"
         android:title="Referral"
+        android:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
     
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/settings_svgrepo_com"
         android:title="Settings"
-        android:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
     
 </menu>

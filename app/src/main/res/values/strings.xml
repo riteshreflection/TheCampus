@@ -9,4 +9,18 @@
     <string name="signup_button">Sign Up</string>
     <string name="no_account_prompt">Don\'t have an account? Sign Up</string>
     <string name="already_have_account_prompt">Already have an account? Login</string>
+    
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="leaderboard_tab_first_timers">First Timers</string>
+    <string name="leaderboard_tab_repeaters">Repeaters</string>
+    <string name="leaderboard_empty_first_timers">No first-time attempts yet</string>
+    <string name="leaderboard_empty_repeaters">No repeat attempts yet</string>
+    <string name="leaderboard_rank_format">#%d</string>
+    <string name="leaderboard_1st_place">1st Place</string>
+    <string name="leaderboard_2nd_place">2nd Place</string>
+    <string name="leaderboard_3rd_place">3rd Place</string>
+    <string name="leaderboard_separator">• • •</string>
+    <string name="leaderboard_your_rank">Your Rank</string>
+
 </resources>

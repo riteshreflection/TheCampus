@@ -53,13 +53,26 @@ class CourseTestsFragment : Fragment() {
         val isEnrolled = arguments?.getBoolean(ARG_IS_ENROLLED) ?: false
         
         adapter = TestAdapter(testsList, isEnrolled) { test ->
-            // Handle attempt click
-            val intent = android.content.Intent(context, TestInterfaceActivity::class.java)
-            intent.putExtra("TEST_ID", test.id)
-            startActivity(intent)
+            // If user is enrolled, allow direct access
+            if (isEnrolled) {
+                launchTest(test.id)
+            } else {
+                // For non-enrolled users, validate profile before allowing free test access
+                com.reflection.thecampus.utils.ProfileValidator.validateProfileForFreeAccess(
+                    requireActivity()
+                ) {
+                    launchTest(test.id)
+                }
+            }
         }
         rvTests.layoutManager = LinearLayoutManager(context)
         rvTests.adapter = adapter
+    }
+    
+    private fun launchTest(testId: String) {
+        val intent = android.content.Intent(context, TestInterfaceActivity::class.java)
+        intent.putExtra("TEST_ID", testId)
+        startActivity(intent)
     }
 
     private fun loadTests() {

@@ -216,6 +216,8 @@ data class TestAttempt(
     val testId: String = "",
     val testTitle: String = "", // Added for easier display in history
     val studentId: String = "",
+    val studentName: String? = null,
+    val studentAvatar: String? = null,
     val submittedAt: Long = 0,
     val timeTaken: Long = 0,
     val score: Double = 0.0,

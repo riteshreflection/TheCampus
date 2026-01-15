@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common Dimensions -->
+    <dimen name="cf_dimen_4">4dp</dimen>
+    <dimen name="cf_dimen_8">8dp</dimen>
+    <dimen name="cf_dimen_12">12dp</dimen>
+    <dimen name="cf_dimen_16">16dp</dimen>
+    <dimen name="cf_dimen_24">24dp</dimen>
+    
+    <!-- Leaderboard Dimensions -->
+    <dimen name="leaderboard_premium_avatar_size">56dp</dimen>
+    <dimen name="leaderboard_regular_avatar_size">40dp</dimen>
+    <dimen name="leaderboard_premium_card_radius">24dp</dimen>
+    <dimen name="leaderboard_regular_card_radius">16dp</dimen>
+    <dimen name="leaderboard_premium_elevation">8dp</dimen>
+    <dimen name="leaderboard_stroke_width">2dp</dimen>
+</resources>

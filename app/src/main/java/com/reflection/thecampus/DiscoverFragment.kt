@@ -32,6 +32,16 @@ class DiscoverFragment : Fragment() {
         rvFeaturedCourses.isNestedScrollingEnabled = false
 
         val shimmer = view.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerDiscover)
+        val etSearchCourses = view.findViewById<android.widget.EditText>(R.id.etSearchCourses)
+
+        // Setup search functionality
+        etSearchCourses.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                filterCourses(s.toString(), rvFeaturedCourses)
+            }
+        })
 
         // Setup swipe-to-refresh
         swipeRefresh.setOnRefreshListener {
@@ -64,7 +74,8 @@ class DiscoverFragment : Fragment() {
                 }
             }
 
-            updateAdapter(rvFeaturedCourses)
+            // Apply current search filter
+            filterCourses(etSearchCourses.text.toString(), rvFeaturedCourses)
         }
 
         // Observe enrolled course IDs
@@ -72,7 +83,9 @@ class DiscoverFragment : Fragment() {
             timber.log.Timber.d("DiscoverFragment: enrolledCourseIds observer triggered")
             timber.log.Timber.d("Received ${ids.size} enrolled course IDs")
             enrolledCourseIds = ids
-            updateAdapter(rvFeaturedCourses)
+            
+            // Apply current search filter
+            filterCourses(etSearchCourses.text.toString(), rvFeaturedCourses)
         }
 
         return view
@@ -89,27 +102,45 @@ class DiscoverFragment : Fragment() {
         // Stop shimmer when not visible
         view?.findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerDiscover)?.stopShimmer()
     }
+    
+    private fun filterCourses(query: String, recyclerView: RecyclerView) {
+        val filteredCourses = if (query.isBlank()) {
+            currentCourses
+        } else {
+            currentCourses.filter { course ->
+                course.basicInfo.name.contains(query, ignoreCase = true) ||
+                course.basicInfo.description.contains(query, ignoreCase = true) ||
+                course.basicInfo.level.contains(query, ignoreCase = true)
+            }
+        }
+        
+        updateAdapter(recyclerView, filteredCourses)
+    }
 
-    private fun updateAdapter(recyclerView: RecyclerView) {
-        timber.log.Timber.d("updateAdapter called - courses: ${currentCourses.size}, enrolled IDs: ${enrolledCourseIds.size}")
+    private fun updateAdapter(recyclerView: RecyclerView, coursesToDisplay: List<Course> = currentCourses) {
+        timber.log.Timber.d("updateAdapter called - courses: ${coursesToDisplay.size}, enrolled IDs: ${enrolledCourseIds.size}")
 
-        if (currentCourses.isNotEmpty()) {
+        if (coursesToDisplay.isNotEmpty()) {
             // Only create adapter if it doesn't exist, otherwise update
             if (!::adapter.isInitialized) {
-                adapter = CourseAdapter(currentCourses, enrolledCourseIds) { course ->
+                adapter = CourseAdapter(coursesToDisplay, enrolledCourseIds) { course ->
                     timber.log.Timber.d("Course clicked: ${course.id} - ${course.basicInfo.name}")
                     val intent = Intent(activity, CourseDetailActivity::class.java)
                     intent.putExtra("COURSE_ID", course.id)
                     startActivity(intent)
                 }
                 recyclerView.adapter = adapter
-                timber.log.Timber.d("✓ Adapter created with ${currentCourses.size} courses")
+                timber.log.Timber.d("✓ Adapter created with ${coursesToDisplay.size} courses")
             } else {
-                adapter.updateCourses(currentCourses, enrolledCourseIds)
-                timber.log.Timber.d("✓ Adapter updated with ${currentCourses.size} courses")
+                adapter.updateCourses(coursesToDisplay, enrolledCourseIds)
+                timber.log.Timber.d("✓ Adapter updated with ${coursesToDisplay.size} courses")
             }
         } else {
-            timber.log.Timber.w("⚠ Cannot update adapter - no courses available")
+            // Show empty state if no courses match search
+            if (::adapter.isInitialized) {
+                adapter.updateCourses(emptyList(), enrolledCourseIds)
+            }
+            timber.log.Timber.w("⚠ No courses to display")
         }
     }
 }

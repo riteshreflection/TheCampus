@@ -60,6 +60,11 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
     private lateinit var tvAppliedCouponDesc: TextView
     private lateinit var ivRemoveCoupon: ImageView
 
+    // Payment Status Views
+    private lateinit var layoutPaymentDown: LinearLayout
+    private lateinit var tvPaymentDownMessage: TextView
+    private lateinit var btnPaymentDownBack: MaterialButton
+
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
@@ -109,6 +114,7 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
         setupCoupons()
         loadUserProfile()
         loadCourseData()
+        checkPaymentStatus()
     }
 
     private fun setupToolbar() {
@@ -160,6 +166,15 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             tilCoupon.visibility = View.VISIBLE
             btnApplyCoupon.visibility = View.VISIBLE
         }
+        
+        // Payment Down Views
+        layoutPaymentDown = findViewById(R.id.layoutPaymentDown)
+        tvPaymentDownMessage = findViewById(R.id.tvPaymentDownMessage)
+        btnPaymentDownBack = findViewById(R.id.btnPaymentDownBack)
+        
+        btnPaymentDownBack.setOnClickListener {
+            finish()
+        }
     }
 
     private fun updateButtonState() {
@@ -182,6 +197,34 @@ class CheckoutActivity : AppCompatActivity(), CFCheckoutResponseCallback {
             // Reset to static background when disabled
             btnProceedToPayment.setBackgroundResource(R.drawable.bg_payment_button_premium)
         }
+    }
+
+    private fun checkPaymentStatus() {
+        database.getReference("siteSettings/paymentControl")
+            .addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                    val enabled = snapshot.child("enabled").getValue(Boolean::class.java) ?: true
+                    val message = snapshot.child("message").getValue(String::class.java) 
+                        ?: "Our payment gateway is currently down for maintenance. Please come back later."
+                    
+                    if (!enabled) {
+                        layoutPaymentDown.visibility = View.VISIBLE
+                        tvPaymentDownMessage.text = message
+                        // Disable main payment button too just in case
+                        btnProceedToPayment.isEnabled = false
+                    } else {
+                        layoutPaymentDown.visibility = View.GONE
+                        // Re-enable button logic will handle itself via checkbox listeners
+                        updateButtonState()
+                    }
+                }
+                
+                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                    // Default to enabled if check fails
+                    Log.e("CheckoutActivity", "Failed to check payment status: ${error.message}")
+                    layoutPaymentDown.visibility = View.GONE
+                }
+            })
     }
 
     private fun loadUserProfile() {

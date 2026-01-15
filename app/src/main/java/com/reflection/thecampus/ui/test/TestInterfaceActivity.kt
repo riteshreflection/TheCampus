@@ -73,7 +73,7 @@ class TestInterfaceActivity : AppCompatActivity() {
     }
     
     private fun showTestInstructionsBottomSheet() {
-        val bottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val bottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
         val view = layoutInflater.inflate(R.layout.bottom_sheet_test_instructions, null)
         bottomSheet.setContentView(view)
         bottomSheet.setCancelable(false)

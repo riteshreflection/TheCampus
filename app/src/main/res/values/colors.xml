@@ -61,4 +61,35 @@
     <color name="option_selected_bg">@color/gray_100</color>
     <color name="option_selected_stroke">@color/black</color>
     <color name="option_unselected_stroke">@color/gray_300</color>
+    
+    <!-- Leaderboard Colors -->
+    <color name="leaderboard_1st_cyan">#06B6D4</color>
+    <color name="leaderboard_1st_blue">#3B82F6</color>
+    <color name="leaderboard_1st_purple">#8B5CF6</color>
+    <color name="leaderboard_1st_border">#67E8F9</color>
+    
+    <color name="leaderboard_2nd_yellow">#FDE047</color>
+    <color name="leaderboard_2nd_amber">#FBBF24</color>
+    <color name="leaderboard_2nd_orange">#FB923C</color>
+    <color name="leaderboard_2nd_border">#FACC15</color>
+    
+    <color name="leaderboard_3rd_gray_light">#F3F4F6</color>
+    <color name="leaderboard_3rd_slate">#E2E8F0</color>
+    <color name="leaderboard_3rd_gray">#E5E7EB</color>
+    <color name="leaderboard_3rd_border">#9CA3AF</color>
+    
+    <color name="leaderboard_separator">#9CA3AF</color>
+
+    <!-- New Leaderboard Colors -->
+    <color name="rank_1_stroke">#00E5FF</color>
+    <color name="rank_1_bg">#F0F8FF</color>
+    <color name="rank_1_badge">#0091EA</color> 
+
+    <color name="rank_2_stroke">#FFD740</color>
+    <color name="rank_2_bg">#FFFDE7</color>
+    <color name="rank_2_badge">#F57F17</color>
+
+    <color name="rank_3_stroke">#B0BEC5</color>
+    <color name="rank_3_bg">#F5F5F5</color>
+    <color name="rank_3_badge">#546E7A</color>
 </resources>

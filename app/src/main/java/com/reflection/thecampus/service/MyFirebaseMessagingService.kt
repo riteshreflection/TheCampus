@@ -28,19 +28,65 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // Check if message contains a notification payload.
-        remoteMessage.notification?.let {
-            showNotification(it.title, it.body)
+        val data = remoteMessage.data
+        
+        // Handle different notification types
+        when (data["type"]) {
+            "course_chat" -> {
+                val courseId = data["courseId"] ?: return
+                val courseName = data["courseName"] ?: "Course Chat"
+                showChatNotification(courseId, courseName, remoteMessage.notification)
+            }
+            else -> {
+                // Default notification handling
+                remoteMessage.notification?.let {
+                    showNotification(it.title, it.body)
+                }
+                
+                // Also check data payload if needed
+                if (remoteMessage.data.isNotEmpty()) {
+                     val title = remoteMessage.data["title"]
+                     val body = remoteMessage.data["body"]
+                     if (title != null && body != null) {
+                         showNotification(title, body)
+                     }
+                }
+            }
+        }
+    }
+    
+    private fun showChatNotification(
+        courseId: String,
+        courseName: String,
+        notification: RemoteMessage.Notification?
+    ) {
+        // Create intent to open CourseChatActivity
+        val intent = Intent(this, com.reflection.thecampus.ui.chat.CourseChatActivity::class.java).apply {
+            putExtra("COURSE_ID", courseId)
+            putExtra("COURSE_NAME", courseName)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         
-        // Also check data payload if needed
-        if (remoteMessage.data.isNotEmpty()) {
-             val title = remoteMessage.data["title"]
-             val body = remoteMessage.data["body"]
-             if (title != null && body != null) {
-                 showNotification(title, body)
-             }
-        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 
+            courseId.hashCode(), // Unique request code per course
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        val channelId = TheCampusApplication.CHANNEL_ID_GENERAL
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_chat_bubble)
+            .setContentTitle(notification?.title ?: courseName)
+            .setContentText(notification?.body ?: "New message")
+            .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setGroup("course_chat_$courseId") // Group notifications by course
+        
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(courseId.hashCode(), notificationBuilder.build())
     }
 
     private fun showNotification(title: String?, body: String?) {
