@@ -123,9 +123,12 @@ class CourseDetailViewModel(application: Application) : AndroidViewModel(applica
 
     private fun calculateInitialPrice(course: Course) {
         val originalPrice = course.pricing.price.coerceAtLeast(0.0) // Ensure non-negative
-        val discount = course.pricing.discount.coerceIn(0, 100) // Clamp to 0-100%
-        val discountAmount = originalPrice * discount / 100
-        val subtotal = (originalPrice - discountAmount).coerceAtLeast(0.0)
+        val discountedPrice = course.pricing.discountedPrice
+        
+        // Use discountedPrice if available, otherwise use original price
+        val basePrice = if (discountedPrice > 0) discountedPrice else originalPrice
+        val discountAmount = (originalPrice - basePrice).coerceAtLeast(0.0)
+        val subtotal = basePrice.coerceAtLeast(0.0)
         
         // Calculate Tax based on dynamic settings
         var taxAmount = 0.0
@@ -168,9 +171,12 @@ class CourseDetailViewModel(application: Application) : AndroidViewModel(applica
         val offers = _offers.value ?: return
 
         val originalPrice = course.pricing.price
-        val discount = course.pricing.discount
-        val siteDiscountAmount = originalPrice * discount / 100
-        val subtotal = originalPrice - siteDiscountAmount
+        val discountedPrice = course.pricing.discountedPrice
+        
+        // Use discountedPrice if available, otherwise use original price
+        val basePrice = if (discountedPrice > 0) discountedPrice else originalPrice
+        val siteDiscountAmount = (originalPrice - basePrice).coerceAtLeast(0.0)
+        val subtotal = basePrice
 
         val coupon = offers.find { it.couponCode.equals(couponCode, ignoreCase = true) }
 

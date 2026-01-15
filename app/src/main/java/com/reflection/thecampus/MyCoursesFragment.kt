@@ -39,21 +39,6 @@ class MyCoursesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_courses, container, false)
-        
-        // Settings Navigation
-        view.findViewById<android.view.View>(R.id.ivSettings).setOnClickListener {
-            startActivity(android.content.Intent(activity, SettingsActivity::class.java))
-        }
-
-        // Referral Navigation
-        view.findViewById<android.view.View>(R.id.ivGift).setOnClickListener {
-            startActivity(android.content.Intent(activity, com.reflection.thecampus.ui.referral.ReferralActivity::class.java))
-        }
-
-        // Analytics Navigation
-        view.findViewById<android.view.View>(R.id.ivAnalytics).setOnClickListener {
-            startActivity(android.content.Intent(activity, AnalyticsActivity::class.java))
-        }
 
         swipeRefresh = view.findViewById(R.id.swipeRefreshMyCourses)
         val rvMyCourses = view.findViewById<RecyclerView>(R.id.rvMyCourses)
@@ -84,8 +69,11 @@ class MyCoursesFragment : Fragment() {
             shimmer.visibility = android.view.View.GONE
 
             if (courses.isEmpty()) {
-                timber.log.Timber.d("Showing empty state (no enrolled courses)")
-                // Show empty state
+                timber.log.Timber.d("No enrolled courses - automatically redirecting to Discovery tab")
+                // Automatically navigate to Discover tab (index 1)
+                (activity as? MainActivity)?.navigateToTab(1)
+                
+                // Still show empty state for when user comes back to this tab
                 emptyState.visibility = View.VISIBLE
                 rvMyCourses.visibility = View.GONE
                 
@@ -93,8 +81,8 @@ class MyCoursesFragment : Fragment() {
                 val browseButton = emptyState.findViewById<MaterialButton>(R.id.btnBrowseCourses)
                 browseButton?.setOnClickListener {
                     timber.log.Timber.d("Browse Courses button clicked!")
-                    // Navigate to Discover tab (index 0)
-                    (activity as? MainActivity)?.navigateToTab(0)
+                    // Navigate to Discover tab (index 1)
+                    (activity as? MainActivity)?.navigateToTab(1)
                 }
                 timber.log.Timber.d("Browse Courses button click listener set")
             } else {

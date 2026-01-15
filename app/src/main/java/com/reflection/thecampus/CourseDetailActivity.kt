@@ -32,17 +32,25 @@ class CourseDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Enable edge-to-edge display
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         setContentView(R.layout.activity_course_detail)
-
-        // Set status bar color to match background
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
-        window.statusBarColor = typedValue.data
+        
+        // Set transparent system bars
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
         // Set status bar icon appearance based on theme
         val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
         val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
+        windowInsetsController.isAppearanceLightNavigationBars = !isDarkMode
+        
+        // Apply window insets to root layout
+        val rootLayout = findViewById<android.view.View>(android.R.id.content)
+        com.reflection.thecampus.utils.WindowInsetsHelper.applySystemBarInsets(rootLayout)
 
         viewModel = ViewModelProvider(this)[CourseDetailViewModel::class.java]
 
@@ -175,19 +183,30 @@ class CourseDetailActivity : AppCompatActivity() {
         
         // Pricing - Update banner views
         val originalPrice = course.pricing.price
-        val discount = course.pricing.discount
-        val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
+        val discountedPrice = course.pricing.discountedPrice
 
-        findViewById<TextView>(R.id.tvBannerDiscountedPrice).text = "₹${discountedPrice.toInt()}"
-        findViewById<TextView>(R.id.tvBannerOriginalPrice).text = "₹${originalPrice.toInt()}"
-        findViewById<TextView>(R.id.tvBannerOriginalPrice).paintFlags = 
-            findViewById<TextView>(R.id.tvBannerOriginalPrice).paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+        // Use discountedPrice if available, otherwise use original price
+        val finalPrice = if (discountedPrice > 0) discountedPrice else originalPrice
+
+        findViewById<TextView>(R.id.tvBannerDiscountedPrice).text = "₹${finalPrice.toInt()}"
         
-        if (discount > 0) {
-            findViewById<TextView>(R.id.tvBannerDiscount).text = "${discount.toInt()}% OFF"
-            findViewById<TextView>(R.id.tvBannerDiscount).visibility = View.VISIBLE
+        // Show original price with strikethrough only if there's a discounted price
+        val tvOriginalPrice = findViewById<TextView>(R.id.tvBannerOriginalPrice)
+        val tvDiscount = findViewById<TextView>(R.id.tvBannerDiscount)
+        
+        if (discountedPrice > 0 && discountedPrice < originalPrice) {
+            tvOriginalPrice.visibility = View.VISIBLE
+            tvOriginalPrice.text = "₹${originalPrice.toInt()}"
+            tvOriginalPrice.paintFlags = tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            
+            // Calculate discount percentage from actual price difference
+            val discountPercentage = ((originalPrice - discountedPrice) / originalPrice * 100).toInt()
+            
+            tvDiscount.text = "${discountPercentage}% OFF"
+            tvDiscount.visibility = View.VISIBLE
         } else {
-            findViewById<TextView>(R.id.tvBannerDiscount).visibility = View.GONE
+            tvOriginalPrice.visibility = View.GONE
+            tvDiscount.visibility = View.GONE
         }
     }
 

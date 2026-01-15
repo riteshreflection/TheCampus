@@ -36,8 +36,26 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Enable edge-to-edge display
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         setContentView(R.layout.activity_login)
-        enableEdgeToEdge()
+        
+        // Set transparent system bars
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        
+        // Set status bar icon appearance based on theme
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val windowInsetsController = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
+        windowInsetsController.isAppearanceLightNavigationBars = !isDarkMode
+        
+        // Apply window insets to root layout
+        val rootLayout = findViewById<android.view.View>(android.R.id.content)
+        com.reflection.thecampus.utils.WindowInsetsHelper.applySystemBarInsets(rootLayout)
+        
         auth = FirebaseAuth.getInstance()
 
         // Configure Google Sign-In

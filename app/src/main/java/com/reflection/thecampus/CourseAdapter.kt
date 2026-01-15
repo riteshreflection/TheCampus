@@ -90,18 +90,27 @@ class CourseAdapter(
             holder.layoutProgress.visibility = View.GONE
 
             val originalPrice = course.pricing.price
-            val discount = course.pricing.discount
-            val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
+            val discountedPrice = course.pricing.discountedPrice
 
-            holder.tvDiscountedPrice.text = "₹${discountedPrice.toInt()}"
-            holder.tvOriginalPrice.text = "₹${originalPrice.toInt()}"
-            holder.tvOriginalPrice.paintFlags = holder.tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            // Use discountedPrice if available, otherwise use original price
+            val finalPrice = if (discountedPrice > 0) discountedPrice else originalPrice
 
-            // Show discount badge if there's a discount
-            if (discount > 0) {
+            holder.tvDiscountedPrice.text = "₹${finalPrice.toInt()}"
+            
+            // Show original price with strikethrough only if there's a discounted price
+            if (discountedPrice > 0 && discountedPrice < originalPrice) {
+                holder.tvOriginalPrice.visibility = View.VISIBLE
+                holder.tvOriginalPrice.text = "₹${originalPrice.toInt()}"
+                holder.tvOriginalPrice.paintFlags = holder.tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                
+                // Calculate discount percentage from actual price difference
+                val discountPercentage = ((originalPrice - discountedPrice) / originalPrice * 100).toInt()
+                
+                // Show discount badge
                 holder.tvDiscountBadge.visibility = View.VISIBLE
-                holder.tvDiscountBadge.text = "${discount.toInt()}% OFF"
+                holder.tvDiscountBadge.text = "${discountPercentage}% OFF"
             } else {
+                holder.tvOriginalPrice.visibility = View.GONE
                 holder.tvDiscountBadge.visibility = View.GONE
             }
 

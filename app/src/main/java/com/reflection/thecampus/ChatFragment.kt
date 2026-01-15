@@ -18,6 +18,8 @@ import com.google.firebase.database.*
 import com.reflection.thecampus.adapter.GroupChatAdapter
 import com.reflection.thecampus.data.model.GroupChatMessage
 import com.reflection.thecampus.utils.SwipeToReplyCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import timber.log.Timber
 
 class ChatFragment : Fragment() {
@@ -58,6 +60,16 @@ class ChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
+
+        // Handle window insets to prevent content being hidden behind navigation bars and keyboard
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            // Apply the larger of the two (nav bar or keyboard) to avoid jumpiness or overlap
+            val bottomPadding = kotlin.math.max(systemBars.bottom, ime.bottom)
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding)
+            insets
+        }
 
         // Initialize views
         spinnerCourses = view.findViewById(R.id.spinnerCourses)
@@ -530,8 +542,21 @@ class ChatFragment : Fragment() {
     }
 
     private fun showNoCourses() {
-        Toast.makeText(context, "You are not enrolled in any courses", Toast.LENGTH_LONG).show()
-        showEmptyState()
+        // Hide course selector and messages
+        spinnerCourses.visibility = View.GONE
+        rvMessages.visibility = View.GONE
+        
+        // Show empty state
+        layoutEmpty.visibility = View.VISIBLE
+        tvEmptyTitle.text = "No Courses Enrolled"
+        tvEmptySubtitle.text = "Enroll in courses to start chatting with classmates"
+        ivEmptyIcon.setImageResource(R.drawable.book_open_svgrepo_com)
+        
+        // Disable message input
+        etMessage.isEnabled = false
+        btnSend.isEnabled = false
+        btnSend.alpha = 0.5f
+        etMessage.hint = "Enroll in a course to chat"
     }
     
     private fun checkGlobalChatFeatureStatus() {

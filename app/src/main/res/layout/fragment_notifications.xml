@@ -7,14 +7,6 @@
     android:padding="16dp"
     android:background="?attr/colorSurface">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notifications"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnBackground"
-        android:layout_marginBottom="16dp"/>
 
     <!-- Permission Alert Card -->
     <com.google.android.material.card.MaterialCardView

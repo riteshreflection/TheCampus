@@ -185,19 +185,24 @@ class CourseContentFragment : Fragment() {
         
         course?.pricing?.let { pricing ->
             val originalPrice = pricing.price
-            val discount = pricing.discount
-            val discountedPrice = floor(originalPrice - (originalPrice * discount / 100))
+            val discountedPrice = pricing.discountedPrice
             
-            // Show discounted price as main price
-            tvPrice.text = "₹${discountedPrice.toInt()}"
+            // Use discountedPrice if available, otherwise use original price
+            val finalPrice = if (discountedPrice > 0) discountedPrice else originalPrice
             
-            // Show discount if exists
-            if (discount > 0) {
+            // Show final price as main price
+            tvPrice.text = "₹${finalPrice.toInt()}"
+            
+            // Show original price with strikethrough only if there's a discounted price
+            if (discountedPrice > 0 && discountedPrice < originalPrice) {
                 tvOriginalPrice.text = "₹${originalPrice.toInt()}"
                 tvOriginalPrice.visibility = View.VISIBLE
                 tvOriginalPrice.paintFlags = tvOriginalPrice.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                 
-                tvDiscount.text = "${discount}% OFF"
+                // Calculate discount percentage from actual price difference
+                val discountPercentage = ((originalPrice - discountedPrice) / originalPrice * 100).toInt()
+                
+                tvDiscount.text = "${discountPercentage}% OFF"
                 tvDiscount.visibility = View.VISIBLE
             } else {
                 tvOriginalPrice.visibility = View.GONE

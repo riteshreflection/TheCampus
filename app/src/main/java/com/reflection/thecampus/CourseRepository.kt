@@ -176,11 +176,45 @@ class CourseRepository(context: Context) {
 
     /**
      * Get all courses with real-time updates from Firebase
+     * Featured courses (sorted by priority) are listed first, followed by non-featured courses
      */
     fun getAllCoursesRealtime(): Flow<List<Course>> = callbackFlow {
         val coursesRef = database.getReference(FirebaseConstants.COURSES)
+        val featuredRef = database.getReference("featuredCourses")
 
-        val listener = object : com.google.firebase.database.ValueEventListener {
+        var allCourses = listOf<Course>()
+        var featuredCourseInfos = listOf<FeaturedCourseInfo>()
+
+        // Listen to featured courses for priority
+        val featuredListener = object : com.google.firebase.database.ValueEventListener {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                launch {
+                    val featured = mutableListOf<FeaturedCourseInfo>()
+                    
+                    for (featuredSnapshot in snapshot.children) {
+                        val courseId = featuredSnapshot.key ?: continue
+                        val priority = featuredSnapshot.child("priority").getValue(Int::class.java) ?: 999
+                        featured.add(FeaturedCourseInfo(courseId, priority))
+                    }
+                    
+                    featuredCourseInfos = featured
+                    Timber.d("Featured courses updated: ${featured.size} courses")
+                    
+                    // Re-sort and emit courses
+                    if (allCourses.isNotEmpty()) {
+                        val sortedCourses = sortCoursesByPriority(allCourses, featuredCourseInfos)
+                        trySend(sortedCourses)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e("Error loading featured courses: ${error.message}")
+            }
+        }
+
+        // Listen to all courses
+        val coursesListener = object : com.google.firebase.database.ValueEventListener {
             override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
                 launch {
                     val courses = mutableListOf<Course>()
@@ -196,11 +230,15 @@ class CourseRepository(context: Context) {
                         }
                     }
 
+                    allCourses = courses
+                    
                     // Update cache (only with published courses)
                     val entities = courses.map { it.toEntity(isEnrolled = false) }
                     courseDao.insertCourses(entities)
 
-                    trySend(courses)
+                    // Sort and emit
+                    val sortedCourses = sortCoursesByPriority(courses, featuredCourseInfos)
+                    trySend(sortedCourses)
                 }
             }
 
@@ -209,9 +247,38 @@ class CourseRepository(context: Context) {
             }
         }
 
-        coursesRef.addValueEventListener(listener)
-        awaitClose { coursesRef.removeEventListener(listener) }
+        featuredRef.addValueEventListener(featuredListener)
+        coursesRef.addValueEventListener(coursesListener)
+        
+        awaitClose {
+            featuredRef.removeEventListener(featuredListener)
+            coursesRef.removeEventListener(coursesListener)
+        }
     }.flowOn(Dispatchers.IO)
+    
+    /**
+     * Sort courses: featured courses by priority first, then non-featured courses
+     */
+    private fun sortCoursesByPriority(
+        courses: List<Course>,
+        featuredInfos: List<FeaturedCourseInfo>
+    ): List<Course> {
+        val featuredMap = featuredInfos.associateBy { it.courseId }
+        
+        // Separate featured and non-featured courses
+        val (featured, nonFeatured) = courses.partition { featuredMap.containsKey(it.id) }
+        
+        // Sort featured courses by priority (lower number = higher priority)
+        val sortedFeatured = featured.sortedBy { featuredMap[it.id]?.priority ?: 999 }
+        
+        Timber.d("Course sorting: ${sortedFeatured.size} featured, ${nonFeatured.size} non-featured")
+        
+        // Return featured courses first, then non-featured
+        return sortedFeatured + nonFeatured
+    }
+    
+    // Helper data class for featured course info
+    private data class FeaturedCourseInfo(val courseId: String, val priority: Int)
 
     /**
      * Force refresh courses from Firebase (for pull-to-refresh)

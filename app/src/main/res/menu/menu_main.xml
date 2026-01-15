@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <item
+        android:id="@+id/action_analytics"
+        android:icon="@drawable/analytics_svgrepo_com"
+        android:title="Analytics"
+        android:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_referral"
+        android:icon="@drawable/gift_svgrepo_com"
+        android:title="Referral"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/settings_svgrepo_com"
+        android:title="Settings"
+        android:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+    
+</menu>

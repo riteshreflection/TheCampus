@@ -7,7 +7,30 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
+
+    <!-- Top AppBar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:title="The Campus"
+            app:titleTextColor="?attr/colorOnSurface"
+            app:menu="@menu/menu_main" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Notification Permission Banner (compact, one-liner) -->
     <include
@@ -15,36 +38,18 @@
         layout="@layout/banner_notification_permission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/notificationPermissionBanner"
-        app:layout_constraintBottom_toTopOf="@+id/tab_layout"
-        app:layout_goneMarginBottom="0dp"
-        app:layout_goneMarginTop="0dp" />
-
-    <!-- Premium Golden Login Banner (above navigation) -->
-    <include
-        android:id="@+id/loginPromptBanner"
-        layout="@layout/banner_login_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/tab_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+    <!-- TabLayout below AppBar -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_bottom_nav"
-        android:elevation="16dp"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:background="?attr/colorSurface"
+        android:elevation="0dp"
         app:tabMode="fixed"
         app:tabGravity="fill"
         app:tabIndicatorColor="?attr/colorPrimary"
@@ -52,7 +57,28 @@
         app:tabIconTint="@color/nav_item_color_state"
         app:tabSelectedTextColor="?attr/colorPrimary"
         app:tabTextColor="?attr/colorOnSurface"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/notificationPermissionBanner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- ViewPager2 for content -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+        app:layout_constraintBottom_toTopOf="@+id/loginPromptBanner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Premium Golden Login Banner (above bottom) -->
+    <include
+        android:id="@+id/loginPromptBanner"
+        layout="@layout/banner_login_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

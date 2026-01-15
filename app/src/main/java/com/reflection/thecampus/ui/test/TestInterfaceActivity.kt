@@ -40,19 +40,25 @@ class TestInterfaceActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_test_interface)
-
-        // Set status bar color to match background
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
-        val backgroundColor = typedValue.data
-        window.statusBarColor = backgroundColor
         
-        // Handle status bar icons (Dark icons for light background, Light icons for dark background)
-        // We can check if the background color is light or dark
-        val isLightBackground = androidx.core.graphics.ColorUtils.calculateLuminance(backgroundColor) > 0.5
+        // Enable edge-to-edge display
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
+        setContentView(R.layout.activity_test_interface)
+        
+        // Set transparent system bars
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        
+        // Set status bar icon appearance based on theme
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
         val controller = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
-        controller.isAppearanceLightStatusBars = isLightBackground
+        controller.isAppearanceLightStatusBars = !isDarkMode
+        controller.isAppearanceLightNavigationBars = !isDarkMode
+        
+        // Apply window insets to root layout
+        val rootLayout = findViewById<android.view.View>(android.R.id.content)
+        com.reflection.thecampus.utils.WindowInsetsHelper.applySystemBarInsets(rootLayout)
 
         initViews()
         setupObservers()

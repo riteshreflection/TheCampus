@@ -41,6 +41,7 @@ data class BasicInfo(
 @IgnoreExtraProperties
 data class Pricing(
     val price: Double = 0.0,
+    val discountedPrice: Double = 0.0,
     val discount: Int = 0,
     val thumbnailUrl: String = ""
 ) : Parcelable

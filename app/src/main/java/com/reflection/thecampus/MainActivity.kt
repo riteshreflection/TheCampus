@@ -22,17 +22,28 @@ class MainActivity : AppCompatActivity() {
         com.reflection.thecampus.utils.ThemeHelper.applyTheme(this)
         super.onCreate(savedInstanceState)
         
+        // Enable edge-to-edge display
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         setContentView(R.layout.activity_main)
         
-        // Set status bar color to match surface
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
-        window.statusBarColor = typedValue.data
+        // Set status bar color to transparent for edge-to-edge
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
         
         // Set status bar icon appearance based on theme
         val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
         val windowInsetsController = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
+        windowInsetsController.isAppearanceLightNavigationBars = !isDarkMode
+        
+        // Setup Toolbar
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        
+        // Apply window insets to AppBarLayout
+        val appBarLayout = findViewById<com.google.android.material.appbar.AppBarLayout>(R.id.appBarLayout)
+        com.reflection.thecampus.utils.WindowInsetsHelper.applyTopInset(appBarLayout)
 
         // Initialize shared ViewModel
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -297,6 +308,29 @@ class MainActivity : AppCompatActivity() {
     fun navigateToTab(tabIndex: Int) {
         if (tabIndex in 0..3) {
             viewPager.currentItem = tabIndex
+        }
+    }
+    
+    override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+    
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(android.content.Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.action_referral -> {
+                startActivity(android.content.Intent(this, com.reflection.thecampus.ui.referral.ReferralActivity::class.java))
+                true
+            }
+            R.id.action_analytics -> {
+                startActivity(android.content.Intent(this, AnalyticsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
     
