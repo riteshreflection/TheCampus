@@ -69,19 +69,17 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        // Chat Enable/Disable Logic
-        val switchEnableChat = findViewById<SwitchMaterial>(R.id.switchEnableChat)
-        val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
-        switchEnableChat.isChecked = prefs.getBoolean("chat_enabled", true)
-
-        switchEnableChat.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("chat_enabled", isChecked).apply()
-            // Notify user to restart or refresh
-            android.widget.Toast.makeText(
-                this,
-                if (isChecked) "Chat enabled. Restart app to see changes." else "Chat disabled. Restart app to see changes.",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
+        // Notifications Logic
+        findViewById<View>(R.id.btnNotifications)?.setOnClickListener {
+            val intent = Intent()
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                intent.action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                intent.putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+            } else {
+                intent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                intent.data = android.net.Uri.fromParts("package", packageName, null)
+            }
+            startActivity(intent)
         }
 
         val profileCard = findViewById<CardView>(R.id.profileCard)

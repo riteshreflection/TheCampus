@@ -251,7 +251,7 @@ class CourseChatActivity : AppCompatActivity() {
         
         muteListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                isMuted = snapshot.getValue(Boolean::class.java) ?: false
+                isMuted = (snapshot.value as? Boolean) ?: false
                 invalidateOptionsMenu() // Refresh menu to update icon
             }
             
@@ -624,7 +624,7 @@ class CourseChatActivity : AppCompatActivity() {
     private fun checkGlobalChatFeatureStatus() {
         chatFeatureListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                isChatFeatureActive = snapshot.getValue(Boolean::class.java) ?: true
+                isChatFeatureActive = (snapshot.value as? Boolean) ?: true
                 
                 if (!isChatFeatureActive) {
                     showMaintenanceState()
@@ -650,7 +650,7 @@ class CourseChatActivity : AppCompatActivity() {
         
         courseChatListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                isCourseChatActive = snapshot.getValue(Boolean::class.java) ?: true
+                isCourseChatActive = (snapshot.value as? Boolean) ?: true
                 
                 if (!isChatFeatureActive || !isCourseChatActive) {
                     showMaintenanceState()
